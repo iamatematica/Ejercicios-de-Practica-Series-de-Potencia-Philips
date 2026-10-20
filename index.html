@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radio e intervalo de convergencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=STIX+Two+Text:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --lab-terra:#b57d4c; --lab-blue:#415a8e; --lab-dark:#20201c; --lab-cream:#faf8f1; --lab-gray:#6579a1;
+  --navy:#0f2244;
+  --paper:#FBF8F1; --ink:#20201c; --muted:#5f5b53;
+  --blue:#2B5A93; --amber:#C77A40; --green:#45785A; --rust:#BC5235; --violet:#6E4EAA;
+  --blue-bg:#eef3f9; --amber-bg:#fbf3e8; --green-bg:#edf4ef; --rust-bg:#faeeea; --violet-bg:#f2eef8;
+  --line:#e2ddd2;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  margin:0; font-family:'Hanken Grotesk',sans-serif; font-size:15px; line-height:1.6; color:var(--ink);
+  background-color:var(--paper);
+  background-image:linear-gradient(rgba(43,90,147,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(43,90,147,.07) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:400;line-height:1.2;margin:0 0 .5em}
+h2{font-size:2rem;color:var(--navy)}
+h3{font-size:1.25rem;color:var(--navy);margin-top:1.6em}
+p{margin:.6em 0}
+.katex{font-size:1.08em}
+.katex-display{margin:.7em 0 !important;overflow-x:auto;overflow-y:hidden !important;padding:2px 0}
+
+/* ===== chrome ===== */
+.topbar{background:linear-gradient(135deg,var(--navy) 0%,#1a3a6e 100%);color:#e0f2fe;padding:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.topbar-inner{max-width:1080px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-inspt{font-size:12px;color:#7dd3fc;letter-spacing:.1em;font-weight:700}
+.brand-title{font-family:'Fraunces',serif;font-size:18px;color:#fff;font-weight:700}
+.brand-sub{font-size:12px;color:#bfdbfe}
+.lab-logo{background:var(--lab-cream);padding:8px 18px 7px;border-radius:12px;text-align:left;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.lab-name{display:flex;align-items:center;font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:700;letter-spacing:-0.01em;line-height:1.2}
+.lab-name .bullet{width:8px;height:8px;border-radius:50%;background:var(--lab-terra);flex-shrink:0;margin-right:7px}
+.lab-name .lab{color:var(--lab-dark)} .lab-name .best{color:var(--lab-terra)} .lab-name .ia{color:var(--lab-blue)}
+.lab-sub{color:var(--lab-gray);font-size:11px;font-weight:500;margin-top:1px;padding-left:15px;font-family:'Hanken Grotesk',sans-serif}
+.ej-lab{font-family:'Fraunces',Georgia,serif;font-size:12.5px;font-weight:700;display:flex;align-items:center}
+.ej-lab .bullet{width:6px;height:6px;border-radius:50%;background:var(--lab-terra);margin-right:5px}
+.ej-lab .lab{color:var(--lab-dark);opacity:.75} .ej-lab .best{color:var(--lab-terra)} .ej-lab .ia{color:var(--lab-blue)}
+.site-footer{background:var(--navy);color:#cbd5e1;padding:30px 0 24px;margin-top:40px}
+.footer-inner{max-width:1080px;margin:0 auto;padding:0 20px;text-align:center}
+.footer-quote{font-family:'Fraunces',serif;font-style:italic;font-size:1.1rem;color:#e0f2fe;margin-bottom:16px}
+.footer-lab{display:inline-block;background:var(--lab-cream);padding:10px 22px 9px;border-radius:12px;text-align:left;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.footer-lab .lab-name{font-size:17px}
+.footer-lab .lab-sub{font-size:12px}
+
+/* ===== matemática de respaldo (sin KaTeX) ===== */
+.mfall{font-family:'STIX Two Text','Times New Roman',serif;font-size:1.06em;white-space:nowrap}
+.mfall.disp{display:block;text-align:center;margin:.7em 0;overflow-x:auto;overflow-y:hidden !important;white-space:normal}
+.mfall .v{font-style:italic}
+.mfall .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;line-height:1.15}
+.mfall .frac>span{padding:0 .2em}
+.mfall .frac>span:first-child{border-bottom:1px solid currentColor}
+.mfall .big{font-size:1.5em;line-height:1;vertical-align:middle;margin:0 .1em}
+.mfall .lim{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05}
+.mfall .lim>small{font-size:.65em}
+.mfall sup,.mfall sub{font-size:.7em;line-height:0}
+#testPanel{position:fixed;right:10px;bottom:10px;z-index:99;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font:12px 'Fira Code',monospace;max-height:50vh;overflow:auto;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#testPanel .ok{color:var(--green)} #testPanel .fail{color:var(--rust);font-weight:700}
+
+/* ===== nav ===== */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(251,248,241,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1080px;margin:0 auto;padding:0 8px;display:flex;justify-content:center}
+.nav button{flex:1 1 0;min-width:0;background:none;border:0;border-bottom:3px solid transparent;padding:12px 4px 10px;font:500 .78rem 'Fira Code',monospace;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap;max-width:200px}
+.nav button.active{color:var(--blue);border-bottom-color:var(--blue)}
+.nav button:hover{color:var(--navy)}
+.nav button .larga{display:inline}
+@media (max-width:560px){.nav button{font-size:.68rem;letter-spacing:0}.nav button .larga{display:none}}
+
+/* ===== layout ===== */
+main{max-width:860px;margin:0 auto;padding:28px 20px 40px}
+main>section{scroll-margin-top:60px}
+.sec-hidden{position:absolute;left:-99999px;top:0;width:820px;visibility:hidden}
+.sec-visible{position:static;visibility:visible}
+.badge{display:inline-block;font:500 .7rem 'Fira Code',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.lead{font-size:1.05rem;color:var(--muted);max-width:680px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:18px 0;box-shadow:0 1px 3px rgba(20,30,50,.05)}
+.card .tt{font:500 .7rem 'Fira Code',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.def{background:var(--blue-bg);border-left:5px solid var(--blue);border-radius:0 12px 12px 0;padding:14px 20px;margin:18px 0}
+.def .tt{font:500 .7rem 'Fira Code',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
+.def ul{padding-left:1.2em;margin:.4em 0} .def li{margin:.45em 0}
+.nota{background:var(--amber-bg);border-left:5px solid var(--amber);border-radius:0 12px 12px 0;padding:12px 18px;margin:16px 0}
+.nota .tt{font:500 .7rem 'Fira Code',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.warn{background:var(--rust-bg);border-left:5px solid var(--rust);border-radius:0 12px 12px 0;padding:12px 18px;margin:16px 0}
+.warn .tt{font:500 .7rem 'Fira Code',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--rust);margin-bottom:4px}
+.warn ul{padding-left:1.2em;margin:.3em 0} .warn li{margin:.5em 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid2>.def{margin:0}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}}
+@media (max-width:640px){h2{font-size:1.6rem} main{padding:20px 16px 32px} .card{padding:14px 14px}}
+table.tabla{width:100%;border-collapse:collapse;font-size:.95rem;margin:10px 0}
+table.tabla th,table.tabla td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.tabla th{font:500 .7rem 'Fira Code',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.dsp{text-align:center;margin:.75em 0;line-height:2.2}
+.dsp .mfall{white-space:normal}
+table.tabla th .katex,table.tabla th .mfall{text-transform:none}
+.nw{white-space:nowrap}
+.tabla-wrap,.calc,.calc-final,.katex-display,.mfall.disp{position:relative}
+.tabla-wrap{overflow-x:auto;overflow-y:hidden !important}
+ol.metodo{padding-left:0;list-style:none;counter-reset:m;margin:14px 0}
+ol.metodo li{position:relative;padding:10px 14px 10px 54px;background:#fff;border:1px solid var(--line);border-radius:12px;margin:8px 0}
+ol.metodo li::before{counter-increment:m;content:counter(m);position:absolute;left:14px;top:10px;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font:600 .85rem 'Fira Code',monospace;display:flex;align-items:center;justify-content:center}
+ol.metodo li b{color:var(--navy)}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:8px 16px;font:600 .9rem 'Hanken Grotesk',sans-serif;cursor:pointer}
+.btn:hover{background:#234a7a}
+.btn.sec{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+.btn.small{padding:5px 11px;font-size:.8rem}
+.btn.ghost{background:none;color:var(--muted);border:1px solid var(--line)}
+.btn.ghost:hover{background:#fff;color:var(--navy)}
+.hero{padding:26px 0 8px}
+.hero h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:700;color:var(--navy);line-height:1}
+.hero .sub{font:500 .75rem 'Fira Code',monospace;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:10px}
+.ruta{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:18px 0}
+.ruta button{text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-family:'Hanken Grotesk',sans-serif;color:var(--ink)}
+.ruta button:hover{border-color:var(--blue);box-shadow:0 2px 8px rgba(43,90,147,.12)}
+.ruta .n{font:500 .7rem 'Fira Code',monospace;color:var(--blue);letter-spacing:.12em}
+.ruta .t{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--navy);margin:2px 0}
+.ruta .d{font-size:.85rem;color:var(--muted)}
+.sig{display:flex;justify-content:flex-end;margin-top:26px}
+.progreso{font:500 .8rem 'Fira Code',monospace;color:var(--muted);margin:8px 0 4px}
+.progreso b{color:var(--green)}
+.recta{display:block;width:100%;height:auto;max-width:680px;margin:6px auto 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.chips button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font:500 .72rem 'Fira Code',monospace;color:var(--blue);cursor:pointer}
+.chips button:hover{border-color:var(--blue)}
+.tsec{scroll-margin-top:64px}
+
+/* ===== tarjetas de ejercicio ===== */
+.ej{background:#fff;border:1px solid var(--line);border-top:5px solid var(--ej);border-radius:14px;margin:20px 0;overflow:hidden;scroll-margin-top:70px;position:relative}
+.ej .ej-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--line);background:#fcfbf8;flex-wrap:wrap}
+.ej .ej-num{font:500 .75rem 'Fira Code',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ej)}
+.ej .ej-num .crit{margin-left:10px;color:#fff;background:var(--ej);border-radius:6px;padding:2px 7px;letter-spacing:.05em}
+.ej .ej-body{padding:12px 18px 16px}
+.ej .enun{font-size:1.15em;margin:4px 0 6px;background:var(--ej-soft);border:1px solid var(--ej-border);border-radius:10px;padding:6px 10px}
+.ej .consigna{font-size:.9rem;color:var(--muted);margin:0 0 10px}
+.intento{border:1px dashed var(--ej-border);border-radius:12px;padding:10px 14px 12px;margin:10px 0 14px;background:#fffdf9}
+.intento .tt{font:500 .7rem 'Fira Code',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--ej);margin-bottom:4px}
+.resp{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0}
+@media (min-width:600px){.resp{grid-template-columns:1fr 1fr 1fr}.resp .span2{grid-column:span 2}}
+.resp label{display:block;font:500 .7rem 'Fira Code',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.resp label .katex,.resp label .mfall{text-transform:none;letter-spacing:0}
+.resp input,.resp select{width:100%;font:400 1rem 'Hanken Grotesk',sans-serif;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.resp input:focus,.resp select:focus{outline:2px solid var(--ej);border-color:var(--ej)}
+.resp .hint{font-size:.75rem;color:var(--muted);margin-top:3px}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.estado{font:500 .75rem 'Fira Code',monospace;color:var(--muted);margin-left:auto}
+.fb{margin-top:8px;padding:10px 14px;border-radius:10px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--green-bg);border:1px solid #bcd4c4;color:#274a35}
+.fb.bad{background:var(--rust-bg);border:1px solid #e6c2b6;color:#6e2c1c}
+.paso,.ans{border:1px solid var(--line);border-radius:10px;margin:8px 0;background:#fff;scroll-margin-top:70px}
+.paso>button,.ans>button{width:100%;text-align:left;background:none;border:0;padding:10px 14px;font:600 .95rem 'Hanken Grotesk',sans-serif;color:var(--navy);cursor:pointer;display:flex;gap:10px;align-items:center}
+.paso>button .num{font:500 .7rem 'Fira Code',monospace;color:#fff;background:var(--ej);border-radius:6px;padding:2px 7px;letter-spacing:.05em;white-space:nowrap}
+.paso>button .ttl,.ans>button .ttl{font-family:'Fraunces',Georgia,serif;font-weight:400;font-size:1.05rem}
+.paso>button .chev,.ans>button .chev{margin-left:auto;transition:transform .2s;color:var(--muted)}
+.paso.open>button .chev,.ans.open>button .chev{transform:rotate(90deg)}
+.paso .cont,.ans .cont{display:none;padding:2px 16px 14px;border-top:1px dashed var(--line)}
+.paso.open .cont,.ans.open .cont{display:block}
+.calc{background:#fff;border-left:4px solid var(--ej-border);padding:4px 12px;margin:6px 0;border-radius:0 8px 8px 0;overflow-x:auto;overflow-y:hidden}
+.calc-final{background:var(--ej-soft);border-left:4px solid var(--ej);padding:6px 12px;margin:8px 0;border-radius:0 8px 8px 0;font-weight:600;overflow-x:auto;overflow-y:hidden}
+.prop{background:var(--amber-bg);border:1px solid #e8cfa8;border-radius:10px;padding:8px 14px;margin:10px 0;font-size:.95rem}
+.prop .tt{font:500 .65rem 'Fira Code',monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-right:8px}
+.just{background:#fcfbf8;border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:6px 0 14px;font-size:.95rem}
+.just .conv{color:var(--green)} .just .div{color:var(--rust)}
+.ans{border-color:#bcd4c4;background:var(--green-bg)}
+.ans>button .num{font:500 .8rem 'Fira Code',monospace;color:#fff;background:var(--green);border-radius:6px;padding:2px 8px}
+.ans .cont{background:#fff;border-radius:0 0 10px 10px}
+.ans-row{padding:6px 0;border-bottom:1px solid var(--line)}
+.ans-row .k{font:500 .7rem 'Fira Code',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-right:10px}
+.ans-note{font-size:.9rem;color:var(--muted);margin:8px 0 0}
+table.tabla td.n{font:500 .8rem 'Fira Code',monospace;color:var(--blue)}
+table.tabla td.val .dato{display:none}
+table.tabla td.val.ver .dato{display:inline}
+table.tabla td.val.ver .oculto{display:none}
+table.tabla td.est{font:500 .75rem 'Fira Code',monospace;color:var(--muted);white-space:nowrap}
+table.tabla td.est.ok{color:var(--green)} table.tabla td.est.no{color:var(--rust)}
+.score{font-family:'Fraunces',serif;font-size:1.5rem;color:var(--navy)}
+.modal-bg{position:fixed;inset:0;background:rgba(15,34,68,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:14px;padding:20px 22px;max-width:420px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.modal h3{margin-top:0}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div>
+        <div class="brand-inspt">Escuela Philips</div>
+        <div class="brand-title">Series de potencias · Radio e intervalo de convergencia</div>
+        <div class="brand-sub">Matemática · 5.º año</div>
+      </div>
+    </div>
+    <div class="lab-logo">
+      <div class="lab-name"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+      <div class="lab-sub">Prof. Ariel L. Cardozo Delgado</div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <button type="button" data-go="teoria" class="active">Teoría</button>
+    <button type="button" data-go="pizarron">Pizarrón<span class="larga"> · 1–2</span></button>
+    <button type="button" data-go="practica">Seis más<span class="larga"> · 3–8</span></button>
+    <button type="button" data-go="resumen">Resumen</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================= TEORÍA ================= -->
+<section id="teoria" class="sec-visible">
+  <div class="hero">
+    <div class="sub">Series de potencias</div>
+    <h1>¿Para qué valores de \(x\) converge?</h1>
+    <p class="lead">Una serie de potencias es una serie numérica distinta para cada valor de \(x\). Con un solo límite —el de la raíz o el del cociente— averiguamos para qué valores converge. Después, los dos ejercicios del pizarrón y seis más, resueltos paso a paso.</p>
+  </div>
+
+  <div class="chips">
+    <button type="button" data-ir="t1">1 · Qué es</button>
+    <button type="button" data-ir="t2">2 · De dónde sale el radio</button>
+    <button type="button" data-ir="t3">3 · Los dos criterios</button>
+    <button type="button" data-ir="t4">4 · Cuál conviene</button>
+    <button type="button" data-ir="t5">5 · Los extremos</button>
+    <button type="button" data-ir="t6">6 · El procedimiento</button>
+  </div>
+
+  <h3 class="tsec" id="t1">1 · Qué es una serie de potencias</h3>
+  <div class="def">
+    <div class="tt">Definición</div>
+    Una <b>serie de potencias centrada en \(c\)</b> es una serie de la forma
+    \[\sum_{n=0}^{\infty} a_n\,(x-c)^n = a_0 + a_1\,(x-c) + a_2\,(x-c)^2 + a_3\,(x-c)^3 + \cdots\]
+    El número \(c\) es el <b>centro</b> y \(a_n\) es el <b>coeficiente</b>: todo lo que acompaña a \((x-c)^n\) y no depende de \(x\). La suma puede empezar en \(n = 1\) o en \(n = 2\) si hace falta; eso no cambia nada de lo que sigue.
+  </div>
+
+  <div class="card">
+    <div class="tt">Ejemplo · el primer ejercicio del pizarrón</div>
+    \[\sum_{n=2}^{\infty}\dfrac{(x-1)^n}{4^n\cdot\ln(n)} \qquad\Longrightarrow\qquad c = 1, \qquad a_n = \dfrac{1}{4^n\cdot\ln(n)}\]
+    <p>Si le damos un valor a \(x\), queda una serie numérica. Con \(x = 3\), por ejemplo, \(x - 1 = 3 - 1 = 2\), y la serie es \(\displaystyle\sum_{n=2}^{\infty}\dfrac{2^n}{4^n\cdot\ln(n)}\). Con \(x = 1\) todos los términos valen \(0\) y la suma es \(0\): <b>toda serie de potencias converge en su centro</b>. La pregunta es qué pasa con los demás valores de \(x\).</p>
+  </div>
+
+  <div class="nota">
+    <div class="tt">El centro, con su signo</div>
+    El centro es el número que se le <b>resta</b> a \(x\). En \((x+2)^n = \left(x-(-2)\right)^n\) el centro es \(-2\), no \(2\); en \(x^n = (x-0)^n\) el centro es \(0\).
+  </div>
+
+  <h3 class="tsec" id="t2">2 · De dónde sale el radio</h3>
+  <p>Fijamos un valor de \(x\) y le aplicamos a la serie numérica \(\displaystyle\sum a_n (x-c)^n\) el criterio de la raíz que ya conocés. La raíz <span class="nw">\(n\)-ésima</span> separa el coeficiente de la potencia:</p>
+  <div class="dsp">\(\displaystyle\sqrt[n]{\left|a_n\,(x-c)^n\right|} = \sqrt[n]{|a_n|}\cdot\sqrt[n]{|x-c|^n} = \sqrt[n]{|a_n|}\cdot|x-c| \;\longrightarrow\; \beta\cdot|x-c|\)</div>
+  <p>donde \(\beta = \displaystyle\lim_{n\to\infty}\sqrt[n]{|a_n|}\). El criterio de la raíz decide comparando ese límite con \(1\):</p>
+  <div class="card">
+    <div class="tabla-wrap"><table class="tabla">
+      <tr><th>Si…</th><th>equivale a…</th><th>la serie…</th></tr>
+      <tr><td>\(\beta\cdot|x-c| &lt; 1\)</td><td>\(|x-c| &lt; \dfrac{1}{\beta}\)</td><td><b style="color:var(--green)">converge absolutamente</b></td></tr>
+      <tr><td>\(\beta\cdot|x-c| &gt; 1\)</td><td>\(|x-c| &gt; \dfrac{1}{\beta}\)</td><td><b style="color:var(--rust)">diverge</b></td></tr>
+      <tr><td>\(\beta\cdot|x-c| = 1\)</td><td>\(|x-c| = \dfrac{1}{\beta}\)</td><td><b style="color:var(--amber)">el criterio no decide</b></td></tr>
+    </table></div>
+  </div>
+  <p>Ese número \(\dfrac{1}{\beta}\) es el <b>radio de convergencia</b> \(R\): la distancia al centro hasta donde la serie converge. Con el cociente pasa lo mismo: \(\left|\dfrac{a_{n+1}(x-c)^{n+1}}{a_n(x-c)^n}\right| = \left|\dfrac{a_{n+1}}{a_n}\right|\cdot|x-c| \to \alpha\cdot|x-c|\), y el radio es \(\dfrac{1}{\alpha}\).</p>
+
+  <svg class="recta" viewBox="0 0 680 150" role="img" aria-label="Recta numérica: la serie converge entre c menos R y c más R, diverge afuera, y en los dos extremos hay que estudiarla aparte">
+    <line x1="14" y1="78" x2="666" y2="78" stroke="#BC5235" stroke-width="2" stroke-dasharray="6 5"/>
+    <polygon points="666,72 678,78 666,84" fill="#BC5235"/>
+    <line x1="190" y1="78" x2="490" y2="78" stroke="#45785A" stroke-width="7" stroke-linecap="butt"/>
+    <line x1="340" y1="68" x2="340" y2="88" stroke="#20201c" stroke-width="2"/>
+    <circle cx="190" cy="78" r="9" fill="#fff" stroke="#C77A40" stroke-width="3"/>
+    <circle cx="490" cy="78" r="9" fill="#fff" stroke="#C77A40" stroke-width="3"/>
+    <text x="340" y="52" text-anchor="middle" font-family="Hanken Grotesk, sans-serif" font-size="15" font-weight="600" fill="#45785A">converge absolutamente</text>
+    <text x="95" y="52" text-anchor="middle" font-family="Hanken Grotesk, sans-serif" font-size="15" font-weight="600" fill="#BC5235">diverge</text>
+    <text x="585" y="52" text-anchor="middle" font-family="Hanken Grotesk, sans-serif" font-size="15" font-weight="600" fill="#BC5235">diverge</text>
+    <text x="190" y="30" text-anchor="middle" font-family="Hanken Grotesk, sans-serif" font-size="14" font-weight="700" fill="#C77A40">?</text>
+    <text x="490" y="30" text-anchor="middle" font-family="Hanken Grotesk, sans-serif" font-size="14" font-weight="700" fill="#C77A40">?</text>
+    <text x="190" y="114" text-anchor="middle" font-family="STIX Two Text, Times New Roman, serif" font-size="19"><tspan font-style="italic">c</tspan> &#8722; <tspan font-style="italic">R</tspan></text>
+    <text x="340" y="114" text-anchor="middle" font-family="STIX Two Text, Times New Roman, serif" font-size="19" font-style="italic">c</text>
+    <text x="490" y="114" text-anchor="middle" font-family="STIX Two Text, Times New Roman, serif" font-size="19"><tspan font-style="italic">c</tspan> + <tspan font-style="italic">R</tspan></text>
+    <text x="340" y="140" text-anchor="middle" font-family="Hanken Grotesk, sans-serif" font-size="13" fill="#5f5b53">en los dos extremos (los círculos) hay que estudiar la serie aparte</text>
+  </svg>
+
+  <h3 class="tsec" id="t3">3 · Los dos criterios</h3>
+  <p>Dos caminos para calcular el radio. Los dos dan el mismo resultado: elegí el que haga el límite más corto.</p>
+  <div class="grid2">
+    <div class="def">
+      <div class="tt">Posibilidad 1 · criterio de la raíz</div>
+      Calculamos
+      \[\beta = \lim_{n\to\infty}\sqrt[n]{|a_n|}\]
+      <ul>
+        <li>Si \(\beta\in\mathbb{R}\), \(\beta\neq 0 \Rightarrow R = \dfrac{1}{\beta}\). La serie converge absolutamente en \((c-R\,;\,c+R)\).</li>
+        <li>Si \(\beta = 0 \Rightarrow R = +\infty\). Converge en todo \(\mathbb{R}\).</li>
+        <li>Si \(\beta = +\infty \Rightarrow R = 0\). Solo converge en \(x = c\).</li>
+      </ul>
+    </div>
+    <div class="def">
+      <div class="tt">Posibilidad 2 · criterio del cociente</div>
+      Calculamos
+      \[\alpha = \lim_{n\to\infty}\left|\dfrac{a_{n+1}}{a_n}\right|\]
+      <ul>
+        <li>Si \(\alpha\in\mathbb{R}\), \(\alpha\neq 0 \Rightarrow R = \dfrac{1}{\alpha}\). La serie converge absolutamente en \((c-R\,;\,c+R)\).</li>
+        <li>Si \(\alpha = 0 \Rightarrow R = +\infty\). Converge en todo \(\mathbb{R}\).</li>
+        <li>Si \(\alpha = +\infty \Rightarrow R = 0\). Solo converge en \(x = c\).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="nota">
+    <div class="tt">Los tres casos aparecen en los ejercicios</div>
+    Radio finito en los ejercicios 1 a 6; \(\alpha = 0\) y \(R = +\infty\) en el 7; \(\alpha = +\infty\) y \(R = 0\) en el 8. Fijate que el radio es el <b>inverso</b> del límite: si el límite da \(0\), el radio es infinito, y al revés.
+  </div>
+
+  <h3 class="tsec" id="t4">4 · Cuál criterio conviene</h3>
+  <p>Depende de qué haya en el coeficiente. Con la raíz, hay que poder calcular la raíz <span class="nw">\(n\)-ésima</span> de cada factor; con el cociente, hay que poder simplificar \(\dfrac{a_{n+1}}{a_n}\).</p>
+  <div class="card">
+    <div class="tabla-wrap"><table class="tabla">
+      <tr><th>En \(a_n\) hay…</th><th>Conviene</th><th>Por qué</th></tr>
+      <tr><td>potencias \(k^n\) junto con \(n\), \(n^2\) o \(\sqrt{n}\)</td><td><b>raíz</b></td><td>\(\sqrt[n]{k^n} = k\) y \(\sqrt[n]{n}\to 1\) resuelven todo</td></tr>
+      <tr><td>factoriales, como \(n!\)</td><td><b>cociente</b></td><td>\((n+1)! = (n+1)\cdot n!\) se simplifica</td></tr>
+      <tr><td>logaritmos, como \(\ln(n)\)</td><td><b>cociente</b></td><td>\(\sqrt[n]{\ln(n)}\) no es un límite que tengamos</td></tr>
+      <tr><td>polinomios como \(n+3\) o \(n^2+1\)</td><td><b>cociente</b></td><td>\(\sqrt[n]{n+3}\) no es un límite que tengamos; con el cociente queda un cociente de polinomios del mismo grado</td></tr>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="tt">Los límites que vamos a usar</div>
+    <p style="margin-top:0"><b>Raíces <span class="nw">\(n\)-ésimas</span>.</b> \(\sqrt[n]{k^n} = k\) para \(k &gt; 0\), y \(\displaystyle\lim_{n\to\infty}\sqrt[n]{n} = 1\). De ahí sale cualquier potencia de \(n\):</p>
+    \[\sqrt[n]{n^2} = \left(\sqrt[n]{n}\right)^2 \to 1^2 = 1 \qquad\qquad \sqrt[n]{\sqrt{n}} = \left(\sqrt[n]{n}\right)^{\frac{1}{2}} \to 1^{\frac{1}{2}} = 1\]
+    <p><b>Cocientes de polinomios del mismo grado.</b> Se divide numerador y denominador por la potencia mayor:</p>
+    \[\dfrac{n+3}{n+4} = \dfrac{1+\dfrac{3}{n}}{1+\dfrac{4}{n}} \;\longrightarrow\; \dfrac{1+0}{1+0} = 1\]
+    <p><b>Factoriales.</b> \((n+1)! = (n+1)\cdot n!\), así que \(\dfrac{(n+1)!}{n!} = n+1\).</p>
+    <p style="margin-bottom:0"><b>Logaritmos.</b> \(\displaystyle\lim_{n\to\infty}\dfrac{\ln(n)}{\ln(n+1)} = 1\). Está desarrollado completo en el ejercicio 1.</p>
+  </div>
+
+  <h3 class="tsec" id="t5">5 · Los extremos</h3>
+  <p>En \(x = c - R\) y en \(x = c + R\) el criterio no decide. Se reemplaza \(x\) en la serie original: la potencia \((x-c)^n\) se convierte en \(R^n\) o en \((-R)^n = (-1)^n R^n\), y casi siempre se cancela con una potencia del coeficiente. Queda una serie numérica de las conocidas:</p>
+  <div class="card">
+    <div class="tabla-wrap"><table class="tabla">
+      <tr><th>Queda</th><th>Qué es</th><th>Conclusión</th></tr>
+      <tr><td>\(\displaystyle\sum \dfrac{1}{n}\)</td><td>armónica</td><td><b style="color:var(--rust)">diverge</b></td></tr>
+      <tr><td>\(\displaystyle\sum \dfrac{(-1)^n}{n}\)</td><td>armónica alternada</td><td><b style="color:var(--green)">converge</b> (Leibniz)</td></tr>
+      <tr><td>\(\displaystyle\sum \dfrac{1}{n^p}\)</td><td>serie \(p\)</td><td>converge si \(p &gt; 1\); diverge si \(p \le 1\)</td></tr>
+      <tr><td>\(\displaystyle\sum (-1)^n\,b_n\), con \(b_n\) decreciente y \(b_n\to 0\)</td><td>alternada</td><td><b style="color:var(--green)">converge</b> (Leibniz)</td></tr>
+      <tr><td>\(\displaystyle\sum (-1)^n\,b_n\), con \(\displaystyle\sum b_n\) convergente</td><td>converge absolutamente</td><td><b style="color:var(--green)">converge</b></td></tr>
+      <tr><td>término general que no tiende a \(0\), como \(n\) o \((-1)^n\,n\)</td><td>falla la condición necesaria</td><td><b style="color:var(--rust)">diverge</b></td></tr>
+      <tr><td>\(\displaystyle\sum \dfrac{1}{n+3}\), \(\displaystyle\sum \dfrac{1}{\ln(n)}\)</td><td>se compara con la armónica</td><td><b style="color:var(--rust)">diverge</b> (comparación)</td></tr>
+    </table></div>
+  </div>
+
+  <h3 class="tsec" id="t6">6 · El procedimiento, en cinco pasos</h3>
+  <ol class="metodo">
+    <li><b>Identificación.</b> El centro \(c\) y el coeficiente \(a_n\).</li>
+    <li><b>Criterio.</b> Calcular \(\beta = \displaystyle\lim_{n\to\infty}\sqrt[n]{|a_n|}\) o \(\alpha = \displaystyle\lim_{n\to\infty}\left|\dfrac{a_{n+1}}{a_n}\right|\).</li>
+    <li><b>Radio.</b> \(R = \dfrac{1}{\beta}\) o \(R = \dfrac{1}{\alpha}\); si el límite da \(0\), \(R = +\infty\); si da \(+\infty\), \(R = 0\).</li>
+    <li><b>Intervalo abierto.</b> \((c-R\,;\,c+R)\): ahí converge absolutamente.</li>
+    <li><b>Extremos.</b> Reemplazar \(x = c-R\) y \(x = c+R\) en la serie original y decidir con un criterio de series numéricas.</li>
+  </ol>
+
+  <div class="warn">
+    <div class="tt">Errores frecuentes</div>
+    <ul>
+      <li><b>Escribir \(R = \beta\)</b> en lugar de \(R = \dfrac{1}{\beta}\). Si \(\beta = \dfrac{1}{4}\), el radio es \(4\), no \(\dfrac{1}{4}\).</li>
+      <li><b>Equivocar el signo del centro.</b> En \((x+2)^n\) el centro es \(-2\), y el intervalo se corre hacia la izquierda.</li>
+      <li><b>Cerrar el intervalo con corchetes sin estudiar los extremos.</b> El criterio solo garantiza el intervalo abierto.</li>
+      <li><b>Creer que el radio es siempre la base del denominador.</b> En el ejercicio 6 el denominador tiene \(8^n\) y el radio es \(4\).</li>
+      <li><b>Olvidar que el \((-1)^n\) del coeficiente cambia los extremos.</b> En el ejercicio 2 la alternada aparece en el borde derecho, no en el izquierdo.</li>
+    </ul>
+  </div>
+
+  <div class="ruta">
+    <button type="button" data-go="pizarron"><div class="n">Ejercicios 1 – 2</div><div class="t">Los del pizarrón</div><div class="d">Uno con logaritmo y otro con los dos criterios.</div></button>
+    <button type="button" data-go="practica"><div class="n">Ejercicios 3 – 8</div><div class="t">Seis más</div><div class="d">Raíz y cociente, con los tres casos del criterio.</div></button>
+    <button type="button" data-go="resumen"><div class="n">Al final</div><div class="t">Resumen</div><div class="d">Los ocho resultados y tu avance.</div></button>
+  </div>
+  <div class="sig"><button class="btn" type="button" data-go="pizarron">Seguir · Ejercicios del pizarrón →</button></div>
+</section>
+
+<!-- ================= PIZARRÓN ================= -->
+<section id="pizarron" class="sec-hidden">
+  <div class="badge">Ejercicios 1 – 2</div>
+  <h2>Los dos ejercicios del pizarrón</h2>
+  <p class="lead">Antes de abrir los pasos, anotá tu radio y decidí qué pasa en cada extremo. Después abrí los pasos de a uno y tratá de anticipar el siguiente.</p>
+  <div class="progreso" data-prog="pizarron"></div>
+  
+<article class="ej" id="ej-e1" data-ej="e1" data-grupo="pizarron" style="--ej:#2B5A93;--ej-soft:#eef3f9;--ej-border:#c8d6e8">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 1 <span class="crit">Criterio del cociente</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=2}^{\infty} \dfrac{(x-1)^n}{4^n \cdot \ln(n)}\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número o fracción con barra</div></div>
+        <div><label>En \(x = -3\) la serie…</label><select data-ext="izq"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div><div><label>En \(x = 5\) la serie…</label><select data-ext="der"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><p>Comparamos con la forma general \(\displaystyle\sum a_n (x-c)^n\). La potencia es \((x-1)^n\): el centro es el número que se le resta a \(x\). El coeficiente es todo lo que acompaña a esa potencia y no depende de \(x\).</p><div class="calc">\(c = 1\)</div><div class="calc">\(a_n = \dfrac{1}{4^n \cdot \ln(n)}\)</div><p>La suma empieza en \(n = 2\) porque \(\ln(1) = 0\) anularía el denominador. Eso no cambia el radio.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Criterio del cociente · cálculo de α</span><span class="chev">▸</span></button><div class="cont"><p>Escribimos el cociente entero: arriba \(a_{n+1}\) (cambiamos cada \(n\) por \(n+1\)) y abajo \(a_n\).</p><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\left|\dfrac{a_{n+1}}{a_n}\right| = \lim_{n\to\infty}\dfrac{\;\dfrac{1}{4^{n+1}\cdot\ln(n+1)}\;}{\dfrac{1}{4^n\cdot\ln(n)}}\)</div><p>Para \(n \ge 2\) todo es positivo, así que el módulo no cambia nada. Dividir por una fracción es multiplicar por su recíproca:</p><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\dfrac{1}{4^{n+1}\cdot\ln(n+1)}\cdot\dfrac{4^n\cdot\ln(n)}{1} = \lim_{n\to\infty}\dfrac{4^n\cdot\ln(n)}{4^{n+1}\cdot\ln(n+1)}\)</div><div class="prop"><span class="tt">Qué se cancela</span> \(4^{n+1} = 4 \cdot 4^n\), así que el \(4^n\) de arriba se simplifica con el de abajo.</div><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\dfrac{4^n\cdot\ln(n)}{4\cdot 4^n\cdot\ln(n+1)} = \lim_{n\to\infty}\dfrac{\ln(n)}{4\cdot\ln(n+1)} = \dfrac{1}{4}\cdot\lim_{n\to\infty}\dfrac{\ln(n)}{\ln(n+1)}\)</div><p>Queda un límite de logaritmos, que es una indeterminación \(\dfrac{\infty}{\infty}\). Escribimos \(\ln(n+1)\) de otra forma. Primero sacamos \(n\) de factor común: \(n\cdot\left(1+\dfrac{1}{n}\right) = n + n\cdot\dfrac{1}{n} = n+1\). Después usamos la propiedad \(\ln(a\cdot b) = \ln(a)+\ln(b)\):</p><div class="dsp">\(\displaystyle \ln(n+1) = \ln\!\left(n\cdot\left(1+\dfrac{1}{n}\right)\right) = \ln(n) + \ln\!\left(1+\dfrac{1}{n}\right)\)</div><p>Reemplazamos y dividimos numerador y denominador por \(\ln(n)\):</p><div class="dsp">\(\displaystyle \dfrac{\ln(n)}{\ln(n+1)} = \dfrac{\ln(n)}{\ln(n)+\ln\!\left(1+\dfrac{1}{n}\right)} = \dfrac{\;\dfrac{\ln(n)}{\ln(n)}\;}{\dfrac{\ln(n)}{\ln(n)}+\dfrac{\ln\left(1+\dfrac{1}{n}\right)}{\ln(n)}} = \dfrac{1}{1+\dfrac{\ln\left(1+\dfrac{1}{n}\right)}{\ln(n)}}\)</div><div class="prop"><span class="tt">Límites que usamos</span> cuando \(n\to\infty\), \(1+\dfrac{1}{n} \to 1\), así que \(\ln\!\left(1+\dfrac{1}{n}\right) \to \ln(1) = 0\); y \(\ln(n) \to +\infty\). Un número que tiende a \(0\) dividido por uno que crece sin límite tiende a \(0\).</div><div class="dsp">\(\displaystyle \lim_{n\to\infty}\dfrac{\ln(n)}{\ln(n+1)} = \lim_{n\to\infty}\dfrac{1}{1+\dfrac{\ln\left(1+\dfrac{1}{n}\right)}{\ln(n)}} = \dfrac{1}{1+0} = 1\)</div><div class="calc-final">\(\alpha = \dfrac{1}{4}\cdot 1 = \dfrac{1}{4}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Como \(\alpha\) es un número real distinto de \(0\), el radio es su inverso:</p><div class="calc-final">\(R = \dfrac{1}{\alpha} = \dfrac{1}{\;\dfrac{1}{4}\;} = 1 \cdot \dfrac{4}{1} = 4\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Intervalo abierto</span><span class="chev">▸</span></button><div class="cont"><p>La serie converge absolutamente en el intervalo abierto centrado en \(c\):</p><div class="calc-final">\((c-R\,;\,c+R) = (1-4\,;\,1+4) = (-3\,;\,5)\)</div><p>En los dos bordes el criterio no dice nada: hay que estudiarlos aparte.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 5</span><span class="ttl">Análisis de los extremos</span><span class="chev">▸</span></button><div class="cont"><p><b>Si \(x = 5\):</b> \(x - 1 = 5 - 1 = 4\). Sustituimos en la serie original:</p><div class="dsp">\(\displaystyle \sum_{n=2}^{\infty}\dfrac{4^n}{4^n\cdot\ln(n)} = \sum_{n=2}^{\infty}\dfrac{1}{\ln(n)}\)</div><div class="just"><b>Justificación:</b> para \(n \ge 2\) vale \(0 < \ln(n) < n\) (porque \(n < e^n\) para todo \(n \ge 1\) y el logaritmo es creciente: \(\ln(n) < \ln(e^n) = n\)). Al invertir, la desigualdad se da vuelta: \(\dfrac{1}{\ln(n)} > \dfrac{1}{n}\). La serie \(\displaystyle\sum_{n=2}^{\infty}\dfrac{1}{n}\) es la armónica sin su primer término, que diverge. Por el <b>criterio de comparación directa</b> (nuestra serie es mayor término a término que una que diverge), <b class="div">diverge</b>.</div><p><b>Si \(x = -3\):</b> \(x - 1 = -3 - 1 = -4\). Sustituimos:</p><div class="dsp">\(\displaystyle \sum_{n=2}^{\infty}\dfrac{(-4)^n}{4^n\cdot\ln(n)} = \sum_{n=2}^{\infty}\dfrac{(-1)^n\cdot 4^n}{4^n\cdot\ln(n)} = \sum_{n=2}^{\infty}\dfrac{(-1)^n}{\ln(n)}\)</div><div class="just"><b>Justificación:</b> es una serie alternada con \(b_n = \dfrac{1}{\ln(n)} > 0\). El logaritmo es creciente: \(\ln(n+1) > \ln(n)\), y al invertir \(b_{n+1} < b_n\), así que \(b_n\) decrece. Además \(\ln(n) \to +\infty\), así que \(b_n \to 0\). Por el <b>criterio de Leibniz</b>, <b class="conv">converge</b>.</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = 4\)</div><div class="ans-row"><span class="k">Extremos</span> en \(x = -3\) la serie converge; en \(x = 5\) diverge</div><div class="ans-row"><span class="k">Intervalo de convergencia</span> \([-3\,;\,5)\)</div><p class="ans-note">¿Y por la raíz? Habría que calcular \(\displaystyle\lim_{n\to\infty}\sqrt[n]{\ln(n)}\), que no está entre los límites que tenemos. Con el logaritmo, el cociente es el camino cómodo.</p></div></div>
+  </div>
+</article>
+<article class="ej" id="ej-e2" data-ej="e2" data-grupo="pizarron" style="--ej:#45785A;--ej-soft:#edf4ef;--ej-border:#bcd4c4">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 2 <span class="crit">Raíz y cociente</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=1}^{\infty} \dfrac{(-1)^n\, x^n}{6^n \cdot \sqrt{n}}\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número o fracción con barra</div></div>
+        <div><label>En \(x = -6\) la serie…</label><select data-ext="izq"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div><div><label>En \(x = 6\) la serie…</label><select data-ext="der"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><p>La potencia es \(x^n = (x-0)^n\): la serie está centrada en cero. El \((-1)^n\) no depende de \(x\), así que forma parte del coeficiente.</p><div class="calc">\(c = 0\)</div><div class="calc">\(a_n = \dfrac{(-1)^n}{6^n \cdot \sqrt{n}}\)</div><p>En los dos criterios aparece el módulo, que borra el signo:</p><div class="calc">\(|a_n| = \left|\dfrac{(-1)^n}{6^n\cdot\sqrt{n}}\right| = \dfrac{|(-1)^n|}{6^n\cdot\sqrt{n}} = \dfrac{|-1|^n}{6^n\cdot\sqrt{n}} = \dfrac{1^n}{6^n\cdot\sqrt{n}} = \dfrac{1}{6^n\cdot\sqrt{n}}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Posibilidad 1 · criterio de la raíz</span><span class="chev">▸</span></button><div class="cont"><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\sqrt[n]{|a_n|} = \lim_{n\to\infty}\sqrt[n]{\dfrac{1}{6^n\cdot\sqrt{n}}}\)</div><p>La raíz se distribuye en el numerador y en cada factor del denominador (todos son positivos):</p><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\dfrac{\sqrt[n]{1}}{\sqrt[n]{6^n}\cdot\sqrt[n]{\sqrt{n}}} = \lim_{n\to\infty}\dfrac{1}{6\cdot\sqrt[n]{\sqrt{n}}}\)</div><div class="prop"><span class="tt">Propiedad de potencias</span> escribimos \(\sqrt{n} = n^{\frac{1}{2}}\). Entonces \(\sqrt[n]{n^{\frac{1}{2}}} = \left(n^{\frac{1}{2}}\right)^{\frac{1}{n}} = n^{\frac{1}{2}\cdot\frac{1}{n}} = n^{\frac{1}{n}\cdot\frac{1}{2}} = \left(n^{\frac{1}{n}}\right)^{\frac{1}{2}} = \left(\sqrt[n]{n}\right)^{\frac{1}{2}}\), y como \(\sqrt[n]{n} \to 1\), queda \(\left(\sqrt[n]{n}\right)^{\frac{1}{2}} \to 1^{\frac{1}{2}} = 1\).</div><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\dfrac{1}{6\cdot\left(\sqrt[n]{n}\right)^{\frac{1}{2}}} = \dfrac{1}{6\cdot 1^{\frac{1}{2}}}\)</div><div class="calc-final">\(\beta = \dfrac{1}{6\cdot 1} = \dfrac{1}{6}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Posibilidad 2 · criterio del cociente (comprobación)</span><span class="chev">▸</span></button><div class="cont"><p>Hacemos el mismo cálculo por el otro camino. El módulo del cociente es el cociente de los módulos, y en el paso 1 vimos que \(|a_n| = \dfrac{1}{6^n\cdot\sqrt{n}}\): el \((-1)^n\) desaparece. Cociente entero, con \(n+1\) arriba y \(n\) abajo:</p><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\left|\dfrac{a_{n+1}}{a_n}\right| = \lim_{n\to\infty}\dfrac{|a_{n+1}|}{|a_n|} = \lim_{n\to\infty}\dfrac{\;\dfrac{1}{6^{n+1}\cdot\sqrt{n+1}}\;}{\dfrac{1}{6^n\cdot\sqrt{n}}} = \lim_{n\to\infty}\dfrac{1}{6^{n+1}\cdot\sqrt{n+1}}\cdot\dfrac{6^n\cdot\sqrt{n}}{1} = \lim_{n\to\infty}\dfrac{6^n\cdot\sqrt{n}}{6^{n+1}\cdot\sqrt{n+1}}\)</div><div class="prop"><span class="tt">Qué se cancela</span> \(6^{n+1} = 6\cdot 6^n\); el \(6^n\) se simplifica. Las dos raíces se juntan en una sola: \(\dfrac{\sqrt{n}}{\sqrt{n+1}} = \sqrt{\dfrac{n}{n+1}}\).</div><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\dfrac{6^n\cdot\sqrt{n}}{6\cdot 6^n\cdot\sqrt{n+1}} = \lim_{n\to\infty}\dfrac{\sqrt{n}}{6\cdot\sqrt{n+1}} = \dfrac{1}{6}\cdot\lim_{n\to\infty}\dfrac{\sqrt{n}}{\sqrt{n+1}} = \dfrac{1}{6}\cdot\lim_{n\to\infty}\sqrt{\dfrac{n}{n+1}}\)</div><p>Adentro de la raíz, dividimos numerador y denominador por \(n\):</p><div class="dsp">\(\displaystyle \dfrac{n}{n+1} = \dfrac{\;\dfrac{n}{n}\;}{\dfrac{n}{n}+\dfrac{1}{n}} = \dfrac{1}{1+\dfrac{1}{n}} \;\longrightarrow\; \dfrac{1}{1+0} = 1\)</div><p>El límite entra en la raíz cuadrada:</p><div class="dsp">\(\displaystyle \alpha = \dfrac{1}{6}\cdot\lim_{n\to\infty}\sqrt{\dfrac{n}{n+1}} = \dfrac{1}{6}\cdot\sqrt{\lim_{n\to\infty}\dfrac{n}{n+1}}\)</div><div class="calc-final">\(\alpha = \dfrac{1}{6}\cdot\sqrt{1} = \dfrac{1}{6}\cdot 1 = \dfrac{1}{6}\)</div><p>Los dos criterios dan el mismo valor, como tiene que ser: el radio no depende del camino.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Como \(\beta\) es un número real distinto de \(0\), el radio es su inverso:</p><div class="calc-final">\(R = \dfrac{1}{\beta} = \dfrac{1}{\;\dfrac{1}{6}\;} = 1 \cdot \dfrac{6}{1} = 6\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 5</span><span class="ttl">Intervalo abierto</span><span class="chev">▸</span></button><div class="cont"><div class="calc-final">\((c-R\,;\,c+R) = (0-6\,;\,0+6) = (-6\,;\,6)\)</div><p>Con centro \(0\), el intervalo es simétrico respecto del origen.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 6</span><span class="ttl">Análisis de los extremos</span><span class="chev">▸</span></button><div class="cont"><p><b>Si \(x = 6\):</b> sustituimos en la serie original.</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{(-1)^n\cdot 6^n}{6^n\cdot\sqrt{n}} = \sum_{n=1}^{\infty}\dfrac{(-1)^n}{\sqrt{n}}\)</div><div class="just"><b>Justificación:</b> serie alternada con \(b_n = \dfrac{1}{\sqrt{n}} > 0\). La raíz cuadrada es creciente: \(\sqrt{n+1} > \sqrt{n}\), y al invertir \(b_{n+1} < b_n\). Además \(\sqrt{n} \to +\infty\), así que \(b_n \to 0\). Por el <b>criterio de Leibniz</b>, <b class="conv">converge</b>.</div><p><b>Si \(x = -6\):</b> sustituimos. Ahora hay dos signos que se juntan: \((-1)^n\cdot(-6)^n = (-1)^n\cdot(-1)^n\cdot 6^n = (-1)^{2n}\cdot 6^n = \left((-1)^2\right)^n\cdot 6^n = 1^n\cdot 6^n = 1\cdot 6^n\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{(-1)^n\cdot(-6)^n}{6^n\cdot\sqrt{n}} = \sum_{n=1}^{\infty}\dfrac{6^n}{6^n\cdot\sqrt{n}} = \sum_{n=1}^{\infty}\dfrac{1}{\sqrt{n}} = \sum_{n=1}^{\infty}\dfrac{1}{n^{\frac{1}{2}}}\)</div><div class="just"><b>Justificación:</b> es una <b>serie \(p\)</b> con \(p = \dfrac{1}{2} \le 1\), por lo tanto <b class="div">diverge</b>.</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = 6\)</div><div class="ans-row"><span class="k">Extremos</span> en \(x = -6\) la serie diverge; en \(x = 6\) converge</div><div class="ans-row"><span class="k">Intervalo de convergencia</span> \((-6\,;\,6]\)</div><p class="ans-note">El \((-1)^n\) del coeficiente da vuelta los bordes: sin él, la serie alternada aparecería en \(x = -6\); con él, aparece en \(x = 6\).</p></div></div>
+  </div>
+</article>
+  <div class="sig"><button class="btn" type="button" data-go="practica">Seguir · Seis ejercicios más →</button></div>
+</section>
+
+<!-- ================= PRÁCTICA ================= -->
+<section id="practica" class="sec-hidden">
+  <div class="badge">Ejercicios 3 – 8</div>
+  <h2>Seis ejercicios más</h2>
+  <p class="lead">Tres por la raíz y tres por el cociente. En los dos últimos el límite del criterio da \(0\) y \(+\infty\): son los casos extremos del criterio.</p>
+  <div class="progreso" data-prog="practica"></div>
+  
+<article class="ej" id="ej-e3" data-ej="e3" data-grupo="practica" style="--ej:#6E4EAA;--ej-soft:#f2eef8;--ej-border:#d9cdea">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 3 <span class="crit">Criterio de la raíz</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=1}^{\infty} \dfrac{(x+2)^n}{n^2 \cdot 3^n}\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número o fracción con barra</div></div>
+        <div><label>En \(x = -5\) la serie…</label><select data-ext="izq"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div><div><label>En \(x = 1\) la serie…</label><select data-ext="der"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><p>La potencia es \((x+2)^n = (x-(-2))^n\): el centro es \(-2\), no \(2\).</p><div class="calc">\(c = -2\)</div><div class="calc">\(a_n = \dfrac{1}{n^2 \cdot 3^n}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Criterio de la raíz · cálculo de β</span><span class="chev">▸</span></button><div class="cont"><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\sqrt[n]{|a_n|} = \lim_{n\to\infty}\sqrt[n]{\dfrac{1}{n^2\cdot 3^n}} = \lim_{n\to\infty}\dfrac{\sqrt[n]{1}}{\sqrt[n]{n^2}\cdot\sqrt[n]{3^n}} = \lim_{n\to\infty}\dfrac{1}{\sqrt[n]{n^2}\cdot\sqrt[n]{3^n}}\)</div><div class="prop"><span class="tt">Límites que usamos</span> \(\sqrt[n]{3^n} = 3\) y \(\sqrt[n]{n^2} = \left(n^2\right)^{\frac{1}{n}} = \left(n^{\frac{1}{n}}\right)^2 = \left(\sqrt[n]{n}\right)^2 \to 1^2 = 1\).</div><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\dfrac{1}{\left(\sqrt[n]{n}\right)^2\cdot 3} = \dfrac{1}{1^2\cdot 3} = \dfrac{1}{1\cdot 3}\)</div><div class="calc-final">\(\beta = \dfrac{1}{1\cdot 3} = \dfrac{1}{3}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Como \(\beta\) es un número real distinto de \(0\), el radio es su inverso:</p><div class="calc-final">\(R = \dfrac{1}{\beta} = \dfrac{1}{\;\dfrac{1}{3}\;} = 1 \cdot \dfrac{3}{1} = 3\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Intervalo abierto</span><span class="chev">▸</span></button><div class="cont"><div class="calc-final">\((c-R\,;\,c+R) = (-2-3\,;\,-2+3) = (-5\,;\,1)\)</div><p>Con centro negativo, el intervalo no es \((-3\,;\,3)\): está corrido dos unidades a la izquierda.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 5</span><span class="ttl">Análisis de los extremos</span><span class="chev">▸</span></button><div class="cont"><p><b>Si \(x = 1\):</b> \(x + 2 = 1 + 2 = 3\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{3^n}{n^2\cdot 3^n} = \sum_{n=1}^{\infty}\dfrac{1}{n^2}\)</div><div class="just"><b>Justificación:</b> es una <b>serie \(p\)</b> con \(p = 2 > 1\), por lo tanto <b class="conv">converge</b>.</div><p><b>Si \(x = -5\):</b> \(x + 2 = -5 + 2 = -3\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{(-3)^n}{n^2\cdot 3^n} = \sum_{n=1}^{\infty}\dfrac{(-1)^n\cdot 3^n}{n^2\cdot 3^n} = \sum_{n=1}^{\infty}\dfrac{(-1)^n}{n^2}\)</div><div class="just"><b>Justificación:</b> la serie de los módulos es \(\displaystyle\sum_{n=1}^{\infty}\left|\dfrac{(-1)^n}{n^2}\right| = \sum_{n=1}^{\infty}\dfrac{1}{n^2}\), que converge (serie \(p\) con \(p = 2\)). Entonces converge <b>absolutamente</b>, y por lo tanto <b class="conv">converge</b>.</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = 3\)</div><div class="ans-row"><span class="k">Extremos</span> en \(x = -5\) la serie converge; en \(x = 1\) converge</div><div class="ans-row"><span class="k">Intervalo de convergencia</span> \([-5\,;\,1]\)</div><p class="ans-note">Con \(n^2\) en el denominador, los dos bordes entran: el intervalo queda cerrado de los dos lados.</p></div></div>
+  </div>
+</article>
+<article class="ej" id="ej-e4" data-ej="e4" data-grupo="practica" style="--ej:#C77A40;--ej-soft:#fbf3e8;--ej-border:#e8cfa8">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 4 <span class="crit">Criterio de la raíz</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=1}^{\infty} \dfrac{n\cdot(x-1)^n}{2^n}\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número o fracción con barra</div></div>
+        <div><label>En \(x = -1\) la serie…</label><select data-ext="izq"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div><div><label>En \(x = 3\) la serie…</label><select data-ext="der"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><p>Acá la \(n\) está en el numerador: todo lo que no es \((x-1)^n\) va en el coeficiente.</p><div class="calc">\(c = 1\)</div><div class="calc">\(a_n = \dfrac{n}{2^n}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Criterio de la raíz · cálculo de β</span><span class="chev">▸</span></button><div class="cont"><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\sqrt[n]{|a_n|} = \lim_{n\to\infty}\sqrt[n]{\dfrac{n}{2^n}} = \lim_{n\to\infty}\dfrac{\sqrt[n]{n}}{\sqrt[n]{2^n}} = \lim_{n\to\infty}\dfrac{\sqrt[n]{n}}{2}\)</div><div class="prop"><span class="tt">Límite que usamos</span> \(\displaystyle\lim_{n\to\infty}\sqrt[n]{n} = 1\).</div><div class="calc-final">\(\displaystyle\beta = \lim_{n\to\infty}\dfrac{\sqrt[n]{n}}{2} = \dfrac{1}{2}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Como \(\beta\) es un número real distinto de \(0\), el radio es su inverso:</p><div class="calc-final">\(R = \dfrac{1}{\beta} = \dfrac{1}{\;\dfrac{1}{2}\;} = 1 \cdot \dfrac{2}{1} = 2\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Intervalo abierto</span><span class="chev">▸</span></button><div class="cont"><div class="calc-final">\((c-R\,;\,c+R) = (1-2\,;\,1+2) = (-1\,;\,3)\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 5</span><span class="ttl">Análisis de los extremos</span><span class="chev">▸</span></button><div class="cont"><p><b>Si \(x = 3\):</b> \(x - 1 = 3 - 1 = 2\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{n\cdot 2^n}{2^n} = \sum_{n=1}^{\infty} n\)</div><div class="just"><b>Justificación:</b> el término general es \(n\), y \(\displaystyle\lim_{n\to\infty} n = +\infty \ne 0\). Por la <b>condición necesaria</b> (si el término no tiende a cero, la serie no puede converger), <b class="div">diverge</b>.</div><p><b>Si \(x = -1\):</b> \(x - 1 = -1 - 1 = -2\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{n\cdot(-2)^n}{2^n} = \sum_{n=1}^{\infty}\dfrac{n\cdot(-1)^n\cdot 2^n}{2^n} = \sum_{n=1}^{\infty}(-1)^n\cdot n\)</div><div class="just"><b>Justificación:</b> los términos son \(-1, 2, -3, 4, \ldots\): en valor absoluto crecen sin límite, así que no tienden a \(0\). Por la <b>condición necesaria</b>, <b class="div">diverge</b>. Que sea alternada no alcanza: Leibniz exige que el término tienda a cero.</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = 2\)</div><div class="ans-row"><span class="k">Extremos</span> en \(x = -1\) la serie diverge; en \(x = 3\) diverge</div><div class="ans-row"><span class="k">Intervalo de convergencia</span> \((-1\,;\,3)\)</div><p class="ans-note">La \(n\) del numerador no cambia el radio (su raíz <span class="nw">\(n\)-ésima</span> tiende a \(1\)), pero en los bordes manda: el término crece y ningún extremo entra.</p></div></div>
+  </div>
+</article>
+<article class="ej" id="ej-e5" data-ej="e5" data-grupo="practica" style="--ej:#BC5235;--ej-soft:#faeeea;--ej-border:#e6c2b6">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 5 <span class="crit">Criterio del cociente</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=1}^{\infty} \dfrac{(x-5)^n}{2^n\cdot(n+3)}\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número o fracción con barra</div></div>
+        <div><label>En \(x = 3\) la serie…</label><select data-ext="izq"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div><div><label>En \(x = 7\) la serie…</label><select data-ext="der"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><div class="calc">\(c = 5\)</div><div class="calc">\(a_n = \dfrac{1}{2^n\cdot(n+3)}\)</div><p>Para escribir \(a_{n+1}\) cambiamos cada \(n\) por \(n+1\): el paréntesis queda \((n+1)+3 = n+4\).</p><div class="calc">\(a_{n+1} = \dfrac{1}{2^{n+1}\cdot\left((n+1)+3\right)} = \dfrac{1}{2^{n+1}\cdot(n+4)}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Criterio del cociente · cálculo de α</span><span class="chev">▸</span></button><div class="cont"><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\left|\dfrac{a_{n+1}}{a_n}\right| = \lim_{n\to\infty}\dfrac{\;\dfrac{1}{2^{n+1}\cdot(n+4)}\;}{\dfrac{1}{2^n\cdot(n+3)}}\)</div><p>Todo es positivo. Multiplicamos por la recíproca de la fracción de abajo:</p><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\dfrac{1}{2^{n+1}\cdot(n+4)}\cdot\dfrac{2^n\cdot(n+3)}{1} = \lim_{n\to\infty}\dfrac{2^n\cdot(n+3)}{2^{n+1}\cdot(n+4)}\)</div><div class="prop"><span class="tt">Qué se cancela</span> \(2^{n+1} = 2\cdot 2^n\): se simplifica el \(2^n\).</div><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\dfrac{2^n\cdot(n+3)}{2\cdot 2^n\cdot(n+4)} = \lim_{n\to\infty}\dfrac{n+3}{2\cdot(n+4)} = \dfrac{1}{2}\cdot\lim_{n\to\infty}\dfrac{n+3}{n+4}\)</div><p>Dividimos numerador y denominador por \(n\):</p><div class="dsp">\(\displaystyle \dfrac{n+3}{n+4} = \dfrac{\dfrac{n}{n}+\dfrac{3}{n}}{\dfrac{n}{n}+\dfrac{4}{n}} = \dfrac{1+\dfrac{3}{n}}{1+\dfrac{4}{n}} \;\longrightarrow\; \dfrac{1+0}{1+0} = 1\)</div><div class="calc-final">\(\alpha = \dfrac{1}{2}\cdot 1 = \dfrac{1}{2}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Como \(\alpha\) es un número real distinto de \(0\), el radio es su inverso:</p><div class="calc-final">\(R = \dfrac{1}{\alpha} = \dfrac{1}{\;\dfrac{1}{2}\;} = 1 \cdot \dfrac{2}{1} = 2\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Intervalo abierto</span><span class="chev">▸</span></button><div class="cont"><div class="calc-final">\((c-R\,;\,c+R) = (5-2\,;\,5+2) = (3\,;\,7)\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 5</span><span class="ttl">Análisis de los extremos</span><span class="chev">▸</span></button><div class="cont"><p><b>Si \(x = 7\):</b> \(x - 5 = 7 - 5 = 2\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{2^n}{2^n\cdot(n+3)} = \sum_{n=1}^{\infty}\dfrac{1}{n+3}\)</div><div class="just"><b>Justificación:</b> se parece a la armónica. Usamos el <b>criterio de comparación por el límite</b> con \(\dfrac{1}{n}\):<div class="dsp">\(\displaystyle \lim_{n\to\infty}\dfrac{\;\dfrac{1}{n+3}\;}{\dfrac{1}{n}} = \lim_{n\to\infty}\dfrac{1}{n+3}\cdot\dfrac{n}{1} = \lim_{n\to\infty}\dfrac{n}{n+3} = \lim_{n\to\infty}\dfrac{\;\dfrac{n}{n}\;}{\dfrac{n}{n}+\dfrac{3}{n}} = \lim_{n\to\infty}\dfrac{1}{1+\dfrac{3}{n}} = \dfrac{1}{1+0} = 1\)</div>Los dos términos son positivos y el límite es un número finito y mayor que \(0\) (\(0 < 1 < +\infty\)), así que las dos series hacen lo mismo. Como la armónica diverge, esta serie <b class="div">diverge</b>.</div><p><b>Si \(x = 3\):</b> \(x - 5 = 3 - 5 = -2\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{(-2)^n}{2^n\cdot(n+3)} = \sum_{n=1}^{\infty}\dfrac{(-1)^n\cdot 2^n}{2^n\cdot(n+3)} = \sum_{n=1}^{\infty}\dfrac{(-1)^n}{n+3}\)</div><div class="just"><b>Justificación:</b> serie alternada con \(b_n = \dfrac{1}{n+3} > 0\). Como \(n+4 > n+3 > 0\), al invertir queda \(b_{n+1} = \dfrac{1}{n+4} < \dfrac{1}{n+3} = b_n\): \(b_n\) decrece (\(\dfrac{1}{4} > \dfrac{1}{5} > \dfrac{1}{6} > \cdots\)), y como \(n+3 \to +\infty\), \(b_n \to 0\). Por el <b>criterio de Leibniz</b>, <b class="conv">converge</b>.</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = 2\)</div><div class="ans-row"><span class="k">Extremos</span> en \(x = 3\) la serie converge; en \(x = 7\) diverge</div><div class="ans-row"><span class="k">Intervalo de convergencia</span> \([3\,;\,7)\)</div><p class="ans-note">El \(+3\) no cambia nada: \(\dfrac{1}{n+3}\) se comporta como \(\dfrac{1}{n}\), y en el borde derecho queda “una armónica disfrazada”.</p></div></div>
+  </div>
+</article>
+<article class="ej" id="ej-e6" data-ej="e6" data-grupo="practica" style="--ej:#2E6F72;--ej-soft:#eaf3f3;--ej-border:#bcd9da">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 6 <span class="crit">Criterio de la raíz</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=1}^{\infty} \dfrac{(-2)^n\,(x-3)^n}{n\cdot 8^n}\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número o fracción con barra</div></div>
+        <div><label>En \(x = -1\) la serie…</label><select data-ext="izq"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div><div><label>En \(x = 7\) la serie…</label><select data-ext="der"><option value="">elegí…</option><option value="C">converge</option><option value="D">diverge</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><p>El \((-2)^n\) no depende de \(x\): va en el coeficiente, junto con el denominador.</p><div class="calc">\(c = 3\)</div><div class="calc">\(a_n = \dfrac{(-2)^n}{n\cdot 8^n}\)</div><div class="calc">\(|a_n| = \dfrac{|-2|^n}{n\cdot 8^n} = \dfrac{2^n}{n\cdot 8^n}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Criterio de la raíz · cálculo de β</span><span class="chev">▸</span></button><div class="cont"><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\sqrt[n]{|a_n|} = \lim_{n\to\infty}\sqrt[n]{\dfrac{2^n}{n\cdot 8^n}} = \lim_{n\to\infty}\dfrac{\sqrt[n]{2^n}}{\sqrt[n]{n}\cdot\sqrt[n]{8^n}} = \lim_{n\to\infty}\dfrac{2}{\sqrt[n]{n}\cdot 8}\)</div><div class="prop"><span class="tt">Límite que usamos</span> \(\sqrt[n]{n} \to 1\).</div><div class="dsp">\(\displaystyle \beta = \lim_{n\to\infty}\dfrac{2}{\sqrt[n]{n}\cdot 8} = \dfrac{2}{1\cdot 8} = \dfrac{2}{8}\)</div><p>Simplificamos por \(2\):</p><div class="calc-final">\(\beta = \dfrac{2}{8} = \dfrac{1\cdot 2}{4\cdot 2} = \dfrac{1}{4}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Como \(\beta\) es un número real distinto de \(0\), el radio es su inverso:</p><div class="calc-final">\(R = \dfrac{1}{\beta} = \dfrac{1}{\;\dfrac{1}{4}\;} = 1 \cdot \dfrac{4}{1} = 4\)</div><p>El radio no es \(8\): el \(2^n\) del numerador también cuenta.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Intervalo abierto</span><span class="chev">▸</span></button><div class="cont"><div class="calc-final">\((c-R\,;\,c+R) = (3-4\,;\,3+4) = (-1\,;\,7)\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 5</span><span class="ttl">Análisis de los extremos</span><span class="chev">▸</span></button><div class="cont"><p><b>Si \(x = 7\):</b> \(x - 3 = 7 - 3 = 4\). Juntamos las dos potencias de exponente \(n\): \((-2)^n\cdot 4^n = \left((-2)\cdot 4\right)^n = (-8)^n = (-1)^n\cdot 8^n\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{(-2)^n\cdot 4^n}{n\cdot 8^n} = \sum_{n=1}^{\infty}\dfrac{(-1)^n\cdot 8^n}{n\cdot 8^n} = \sum_{n=1}^{\infty}\dfrac{(-1)^n}{n}\)</div><div class="just"><b>Justificación:</b> es la <b>serie armónica alternada</b>, con \(b_n = \dfrac{1}{n} > 0\). Como \(n+1 > n\), al invertir queda \(b_{n+1} = \dfrac{1}{n+1} < \dfrac{1}{n} = b_n\): decrece. Y como \(n \to +\infty\), \(b_n \to 0\). Por el <b>criterio de Leibniz</b>, <b class="conv">converge</b>.</div><p><b>Si \(x = -1\):</b> \(x - 3 = -1 - 3 = -4\). Ahora \((-2)^n\cdot(-4)^n = \left((-2)\cdot(-4)\right)^n = 8^n\).</p><div class="dsp">\(\displaystyle \sum_{n=1}^{\infty}\dfrac{(-2)^n\cdot(-4)^n}{n\cdot 8^n} = \sum_{n=1}^{\infty}\dfrac{8^n}{n\cdot 8^n} = \sum_{n=1}^{\infty}\dfrac{1}{n}\)</div><div class="just"><b>Justificación:</b> es la <b>serie armónica</b>, que <b class="div">diverge</b>.</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = 4\)</div><div class="ans-row"><span class="k">Extremos</span> en \(x = -1\) la serie diverge; en \(x = 7\) converge</div><div class="ans-row"><span class="k">Intervalo de convergencia</span> \((-1\,;\,7]\)</div><p class="ans-note">Acá falla el atajo “el radio es la base del denominador”: \(\beta = \dfrac{2}{8}\), y el radio es su inverso: \(R = \dfrac{1}{\;\dfrac{2}{8}\;} = 1\cdot\dfrac{8}{2} = \dfrac{8}{2} = 4\), no \(8\).</p></div></div>
+  </div>
+</article>
+<article class="ej" id="ej-e7" data-ej="e7" data-grupo="practica" style="--ej:#2B5A93;--ej-soft:#eef3f9;--ej-border:#c8d6e8">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 7 <span class="crit">Criterio del cociente</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=1}^{\infty} \dfrac{x^n}{n!}\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número, fracción con barra o «inf» para infinito</div></div>
+        <div class="span2"><label>La serie converge…</label><select data-donde><option value="">elegí…</option><option value="R">en todos los números reales</option><option value="c">solo en el centro</option><option value="I">en un intervalo acotado</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><p>Centrada en cero (\(x^n = (x-0)^n\)). Recordá que \(n! = 1\cdot 2\cdot 3\cdots n\), y que el factorial siguiente se obtiene multiplicando por el número que sigue: \((n+1)! = (n+1)\cdot n!\).</p><div class="calc">\(c = 0\)</div><div class="calc">\(a_n = \dfrac{1}{n!}\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Criterio del cociente · cálculo de α</span><span class="chev">▸</span></button><div class="cont"><p>Con factoriales, el cociente es el camino natural: la raíz <span class="nw">\(n\)-ésima</span> de \(n!\) no es un límite que tengamos.</p><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\left|\dfrac{a_{n+1}}{a_n}\right| = \lim_{n\to\infty}\dfrac{\;\dfrac{1}{(n+1)!}\;}{\dfrac{1}{n!}} = \lim_{n\to\infty}\dfrac{1}{(n+1)!}\cdot\dfrac{n!}{1} = \lim_{n\to\infty}\dfrac{n!}{(n+1)!}\)</div><div class="prop"><span class="tt">Qué se cancela</span> \((n+1)! = (n+1)\cdot n!\): se simplifica el \(n!\).</div><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\dfrac{n!}{(n+1)\cdot n!} = \lim_{n\to\infty}\dfrac{1}{n+1}\)</div><div class="prop"><span class="tt">Límite que usamos</span> el denominador \(n+1\) crece sin límite, así que \(\dfrac{1}{n+1} \to 0\).</div><div class="calc-final">\(\displaystyle\alpha = \lim_{n\to\infty}\dfrac{1}{n+1} = 0\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Según el criterio del cociente, si \(\alpha = 0\) el radio es infinito:</p><div class="calc-final">\(\alpha = 0 \;\Rightarrow\; R = +\infty\)</div><p>Lo comprobamos con un \(x \ne 0\) fijo (en \(x = 0\) todos los términos valen \(0\)). Cociente de dos términos consecutivos de la serie numérica:</p><div class="dsp">\(\displaystyle \left|\dfrac{\;\dfrac{x^{n+1}}{(n+1)!}\;}{\dfrac{x^n}{n!}}\right| = \dfrac{|x|^{n+1}\cdot n!}{|x|^n\cdot(n+1)!} = \dfrac{|x|^n\cdot|x|\cdot n!}{|x|^n\cdot(n+1)\cdot n!} = \dfrac{|x|}{n+1} \;\longrightarrow\; 0 < 1\)</div><p>Por más grande que sea \(|x|\), el cociente tiende a \(0\): el factorial termina ganando siempre.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Conclusión</span><span class="chev">▸</span></button><div class="cont"><p>La serie converge absolutamente para todo número real. No hay extremos que estudiar, porque el intervalo no tiene bordes.</p><div class="calc-final">\(\text{converge en } (-\infty\,;\,+\infty) = \mathbb{R}\)</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = +\infty\)</div><div class="ans-row"><span class="k">Dónde converge</span> en todo \(\mathbb{R}\), absolutamente</div><div class="ans-row"><span class="k">Intervalo de convergencia</span> \((-\infty\,;\,+\infty)\)</div><p class="ans-note">Cuando el límite del criterio da \(0\), el radio no es \(0\): es \(+\infty\). Es el error más tentador de este caso.</p></div></div>
+  </div>
+</article>
+<article class="ej" id="ej-e8" data-ej="e8" data-grupo="practica" style="--ej:#45785A;--ej-soft:#edf4ef;--ej-border:#bcd4c4">
+  <div class="ej-head">
+    <div class="ej-num">Ejercicio 8 <span class="crit">Criterio del cociente</span></div>
+    <div class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+  </div>
+  <div class="ej-body">
+    <div class="enun">\[\sum_{n=1}^{\infty} n!\cdot(x-2)^n\]</div>
+    <div class="consigna">Determiná el radio de convergencia y el intervalo completo de convergencia.</div>
+    <div class="intento">
+      <div class="tt">Tu intento</div>
+      <div class="resp">
+        <div><label>Radio R</label><input type="text" data-r placeholder="por ejemplo 3 o 1/7" autocomplete="off"><div class="hint">número, fracción con barra o «inf» para infinito</div></div>
+        <div class="span2"><label>La serie converge…</label><select data-donde><option value="">elegí…</option><option value="R">en todos los números reales</option><option value="c">solo en el centro</option><option value="I">en un intervalo acotado</option></select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn small" type="button" data-check>Comprobar</button>
+        <button class="btn small ghost" type="button" data-abrir>Abrir todos los pasos</button>
+        <span class="estado" data-estado>sin responder</span>
+      </div>
+      <div class="fb" data-fbej></div>
+    </div>
+    <div class="pasos"><div class="paso"><button type="button"><span class="num">Paso 1</span><span class="ttl">Identificación</span><span class="chev">▸</span></button><div class="cont"><div class="calc">\(c = 2\)</div><div class="calc">\(a_n = n!\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 2</span><span class="ttl">Criterio del cociente · cálculo de α</span><span class="chev">▸</span></button><div class="cont"><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\left|\dfrac{a_{n+1}}{a_n}\right| = \lim_{n\to\infty}\dfrac{(n+1)!}{n!}\)</div><div class="prop"><span class="tt">Qué se cancela</span> \((n+1)! = (n+1)\cdot n!\).</div><div class="dsp">\(\displaystyle \alpha = \lim_{n\to\infty}\dfrac{(n+1)\cdot n!}{n!} = \lim_{n\to\infty}(n+1)\)</div><div class="calc-final">\(\displaystyle\alpha = \lim_{n\to\infty}(n+1) = +\infty\)</div></div></div><div class="paso"><button type="button"><span class="num">Paso 3</span><span class="ttl">Radio de convergencia</span><span class="chev">▸</span></button><div class="cont"><p>Según el criterio del cociente, si \(\alpha = +\infty\) el radio es \(0\):</p><div class="calc-final">\(\alpha = +\infty \;\Rightarrow\; R = 0\)</div><p>Lo comprobamos con un \(x \ne 2\) fijo. Cociente de dos términos consecutivos de la serie numérica:</p><div class="dsp">\(\displaystyle \left|\dfrac{(n+1)!\cdot(x-2)^{n+1}}{n!\cdot(x-2)^n}\right| = \dfrac{(n+1)\cdot n!\cdot|x-2|^n\cdot|x-2|}{n!\cdot|x-2|^n} = (n+1)\cdot|x-2| \;\longrightarrow\; +\infty > 1\)</div><p>Por más chico que sea \(|x-2|\), el cociente crece sin límite: por el criterio del cociente, la serie diverge.</p></div></div><div class="paso"><button type="button"><span class="num">Paso 4</span><span class="ttl">Conclusión</span><span class="chev">▸</span></button><div class="cont"><p>Solo converge en el centro. En \(x = 2\) cada término es \(n!\cdot(2-2)^n = n!\cdot 0^n = 0\) (para \(n \ge 1\)), así que la suma vale \(0\).</p><div class="calc-final">\(\text{converge solo en } x = 2\)</div></div></div></div>
+    <div class="ans"><button type="button"><span class="num">✓</span><span class="ttl">Ver el resultado final</span><span class="chev">▸</span></button>
+      <div class="cont"><div class="ans-row"><span class="k">Radio</span> \(R = 0\)</div><div class="ans-row"><span class="k">Dónde converge</span> solo en el centro, \(x = 2\)</div><div class="ans-row"><span class="k">Conjunto de convergencia</span> \(\{2\}\)</div><p class="ans-note">Toda serie de potencias converge en su centro. Este es el caso extremo: no converge en ningún otro punto.</p></div></div>
+  </div>
+</article>
+  <div class="sig"><button class="btn" type="button" data-go="resumen">Seguir · Resumen →</button></div>
+</section>
+
+<!-- ================= RESUMEN ================= -->
+<section id="resumen" class="sec-hidden">
+  <div class="badge">Resumen</div>
+  <h2>Los ocho resultados</h2>
+  <p class="lead">Cada fila se completa cuando comprobás tu intento o abrís el resultado final de ese ejercicio.</p>
+  <div class="card">
+    <div class="score" id="resScore"></div>
+    <div id="resMsg" style="color:var(--muted)"></div>
+  </div>
+  <div class="card">
+    <div class="tabla-wrap"><table class="tabla" id="tablaRes">
+      <tr><th>Ej.</th><th>Serie</th><th>Criterio</th><th>Radio</th><th>Converge en</th><th>Tu intento</th></tr>
+      <tr data-row="e1"><td class="n">1</td><td class="serie">\(\sum_{n=2}^{\infty} \dfrac{(x-1)^n}{4^n \cdot \ln(n)}\)</td><td>cociente</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = 4\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\([-3\,;\,5)\)</span></td><td class="est" data-est>—</td></tr><tr data-row="e2"><td class="n">2</td><td class="serie">\(\sum_{n=1}^{\infty} \dfrac{(-1)^n\, x^n}{6^n \cdot \sqrt{n}}\)</td><td>Raíz y cociente</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = 6\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\((-6\,;\,6]\)</span></td><td class="est" data-est>—</td></tr><tr data-row="e3"><td class="n">3</td><td class="serie">\(\sum_{n=1}^{\infty} \dfrac{(x+2)^n}{n^2 \cdot 3^n}\)</td><td>raíz</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = 3\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\([-5\,;\,1]\)</span></td><td class="est" data-est>—</td></tr><tr data-row="e4"><td class="n">4</td><td class="serie">\(\sum_{n=1}^{\infty} \dfrac{n\cdot(x-1)^n}{2^n}\)</td><td>raíz</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = 2\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\((-1\,;\,3)\)</span></td><td class="est" data-est>—</td></tr><tr data-row="e5"><td class="n">5</td><td class="serie">\(\sum_{n=1}^{\infty} \dfrac{(x-5)^n}{2^n\cdot(n+3)}\)</td><td>cociente</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = 2\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\([3\,;\,7)\)</span></td><td class="est" data-est>—</td></tr><tr data-row="e6"><td class="n">6</td><td class="serie">\(\sum_{n=1}^{\infty} \dfrac{(-2)^n\,(x-3)^n}{n\cdot 8^n}\)</td><td>raíz</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = 4\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\((-1\,;\,7]\)</span></td><td class="est" data-est>—</td></tr><tr data-row="e7"><td class="n">7</td><td class="serie">\(\sum_{n=1}^{\infty} \dfrac{x^n}{n!}\)</td><td>cociente</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = +\infty\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\((-\infty\,;\,+\infty) = \mathbb{R}\)</span></td><td class="est" data-est>—</td></tr><tr data-row="e8"><td class="n">8</td><td class="serie">\(\sum_{n=1}^{\infty} n!\cdot(x-2)^n\)</td><td>cociente</td><td class="val"><span class="oculto">·</span><span class="dato">\(R = 0\)</span></td><td class="val"><span class="oculto">·</span><span class="dato">\(\{2\}\)</span></td><td class="est" data-est>—</td></tr>
+    </table></div>
+    <div class="acciones" style="margin-top:12px">
+      <button class="btn sec small" type="button" id="verTodos">Mostrar todos los resultados</button>
+      <button class="btn ghost small" type="button" id="reiniciar">Borrar mi avance</button>
+    </div>
+  </div>
+  <div class="nota">
+    <div class="tt">Para repasar</div>
+    Cuando en un borde queda \(\dfrac{1}{n}\) el intervalo se abre de ese lado; cuando queda \(\dfrac{(-1)^n}{n}\), se cierra. Con \(n^2\) en el denominador entran los dos bordes (ejercicio 3); con \(n\) en el numerador no entra ninguno (ejercicio 4).
+  </div>
+</section>
+
+</main>
+
+<div class="modal-bg" id="modalReset">
+  <div class="modal">
+    <h3>¿Borrar tu avance?</h3>
+    <p>Se borran tus intentos y el estado de las ocho tarjetas en este dispositivo.</p>
+    <div class="acciones"><button class="btn small" type="button" id="doReset">Sí, borrar</button><button class="btn ghost small" type="button" id="closeReset">Cancelar</button></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-quote">"La matemática no exige genios, exige constancia."</div>
+    <div class="footer-lab">
+      <div class="lab-name"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+      <div class="lab-sub">Prof. Ariel L. Cardozo Delgado</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+const $ = (s, r) => (r||document).querySelector(s);
+const $$ = (s, r) => Array.from((r||document).querySelectorAll(s));
+
+/* ---------- KaTeX ---------- */
+const KOPT = {
+  delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],
+  throwOnError:false,
+  macros: {
+    '\\neq': '\\mathrel{\\text{\\char"2260}}',
+    '\\ne':  '\\mathrel{\\text{\\char"2260}}',
+    '\\lim': '\\mathop{\\text{lím}}\\limits'
+  }
+};
+function tex(el){ if (window.renderMathInElement) renderMathInElement(el||document.body, KOPT); }
+
+/* ---------- datos ---------- */
+const EJ = [{"id": "e1", "num": 1, "grupo": "pizarron", "c": 1, "R": 4, "kind": "fin", "final": "[-3\\,;\\,5)", "tex": "\\sum_{n=2}^{\\infty} \\dfrac{(x-1)^n}{4^n \\cdot \\ln(n)}", "izq": -3, "der": 5, "ext": ["C", "D"]}, {"id": "e2", "num": 2, "grupo": "pizarron", "c": 0, "R": 6, "kind": "fin", "final": "(-6\\,;\\,6]", "tex": "\\sum_{n=1}^{\\infty} \\dfrac{(-1)^n\\, x^n}{6^n \\cdot \\sqrt{n}}", "izq": -6, "der": 6, "ext": ["D", "C"]}, {"id": "e3", "num": 3, "grupo": "practica", "c": -2, "R": 3, "kind": "fin", "final": "[-5\\,;\\,1]", "tex": "\\sum_{n=1}^{\\infty} \\dfrac{(x+2)^n}{n^2 \\cdot 3^n}", "izq": -5, "der": 1, "ext": ["C", "C"]}, {"id": "e4", "num": 4, "grupo": "practica", "c": 1, "R": 2, "kind": "fin", "final": "(-1\\,;\\,3)", "tex": "\\sum_{n=1}^{\\infty} \\dfrac{n\\cdot(x-1)^n}{2^n}", "izq": -1, "der": 3, "ext": ["D", "D"]}, {"id": "e5", "num": 5, "grupo": "practica", "c": 5, "R": 2, "kind": "fin", "final": "[3\\,;\\,7)", "tex": "\\sum_{n=1}^{\\infty} \\dfrac{(x-5)^n}{2^n\\cdot(n+3)}", "izq": 3, "der": 7, "ext": ["C", "D"]}, {"id": "e6", "num": 6, "grupo": "practica", "c": 3, "R": 4, "kind": "fin", "final": "(-1\\,;\\,7]", "tex": "\\sum_{n=1}^{\\infty} \\dfrac{(-2)^n\\,(x-3)^n}{n\\cdot 8^n}", "izq": -1, "der": 7, "ext": ["D", "C"]}, {"id": "e7", "num": 7, "grupo": "practica", "c": 0, "R": "inf", "kind": "inf", "final": "(-\\infty\\,;\\,+\\infty) = \\mathbb{R}", "tex": "\\sum_{n=1}^{\\infty} \\dfrac{x^n}{n!}", "donde": "R"}, {"id": "e8", "num": 8, "grupo": "practica", "c": 2, "R": 0, "kind": "cero", "final": "\\{2\\}", "tex": "\\sum_{n=1}^{\\infty} n!\\cdot(x-2)^n", "donde": "c"}];
+const LNA = {e1:n=>-n*Math.log(4)-Math.log(Math.log(n)),e2:n=>-n*Math.log(6)-0.5*Math.log(n),e3:n=>-2*Math.log(n)-n*Math.log(3),e4:n=>Math.log(n)-n*Math.LN2,e5:n=>-n*Math.LN2-Math.log(n+3),e6:n=>n*Math.LN2-Math.log(n)-n*Math.log(8)};
+const RAT = {e7:n=>1/(n+1),e8:n=>n+1};
+const byId = id => EJ.find(e => e.id===id);
+
+/* ---------- navegación ---------- */
+const SECS = ['teoria','pizarron','practica','resumen'];
+function ir(id, silencioso){
+  if (!SECS.includes(id)) return;
+  ST.sec = id; if (!silencioso) guardar();
+  SECS.forEach(s => { const el = document.getElementById(s); el.classList.toggle('sec-visible', s===id); el.classList.toggle('sec-hidden', s!==id); });
+  $$('#nav button').forEach(b => b.classList.toggle('active', b.dataset.go===id));
+  document.getElementById(id).scrollIntoView({block:'start', behavior:'instant'});
+  if (id==='resumen') pintarResumen();
+}
+
+/* ---------- lectura del radio ---------- */
+function parseR(s){
+  s = (s||'').trim().toLowerCase().replace(',', '.').replace('−','-').replace(/\s+/g,'');
+  if (!s) return null;
+  if (/^\+?(inf|infinito|∞|oo)$/.test(s)) return Infinity;
+  const m = s.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if (m) { const d = parseFloat(m[2]); return d===0 ? null : parseFloat(m[1])/d; }
+  if (!/^-?\d+(?:\.\d+)?$/.test(s)) return null;
+  return parseFloat(s);
+}
+function igualR(v, R){
+  if (v===null || v===Infinity || R===0) return v===R;
+  return Math.abs(v-R) < 1e-6;
+}
+
+/* ---------- comprobar ---------- */
+function comprobar(art, silencioso){
+  const e = byId(art.dataset.ej);
+  const rTxt = $('[data-r]', art).value;
+  const r = parseR(rTxt);
+  const fb = $('[data-fbej]', art);
+  const msgs = []; let bien = true;
+  const d = ST.ej[e.id] || (ST.ej[e.id] = {});
+  d.r = rTxt;
+  if (e.kind==='fin'){
+    if (r===null){ bien=false; msgs.push('No pude leer el radio: escribí un número o una fracción con barra.'); }
+    else if (r===Infinity){ bien=false; msgs.push('El radio no es infinito: el límite del criterio da un número distinto de cero.'); }
+    else if (!igualR(r, e.R)){ bien=false;
+      if (Math.abs(r - 1/e.R) < 1e-6) msgs.push('Calculaste bien el límite, pero el radio es su <b>inverso</b>: \\(R = \\dfrac{1}{\\beta}\\) o \\(R = \\dfrac{1}{\\alpha}\\).');
+      else if (e.c!==0 && Math.abs(r - Math.abs(e.c)) < 1e-6) msgs.push('Ese número sale del centro, no del radio. El radio sale del límite del criterio.');
+      else if (e.id==='e6' && Math.abs(r-8)<1e-6) msgs.push('El radio no es la base del denominador: el \\(2^n\\) del numerador también entra en el límite.');
+      else msgs.push('El radio no es ese. Revisá qué es exactamente \\(a_n\\) y qué se simplifica al tomar el límite.');
+    } else msgs.push('Radio correcto.');
+    const vi = $('[data-ext="izq"]', art).value, vd = $('[data-ext="der"]', art).value;
+    d.izq = vi; d.der = vd;
+    if (vi==='' || vd===''){ bien=false; msgs.push('Falta decidir qué pasa en algún extremo.'); }
+    else {
+      if (vi===e.ext[0]) msgs.push(`En \\(x = ${e.izq}\\): correcto.`); else { bien=false; msgs.push(`En \\(x = ${e.izq}\\): revisá qué serie numérica queda al reemplazar, y con qué criterio se decide.`); }
+      if (vd===e.ext[1]) msgs.push(`En \\(x = ${e.der}\\): correcto.`); else { bien=false; msgs.push(`En \\(x = ${e.der}\\): revisá qué serie numérica queda al reemplazar, y con qué criterio se decide.`); }
+    }
+  } else {
+    const R = e.kind==='inf' ? Infinity : 0;
+    if (r===null){ bien=false; msgs.push('No pude leer el radio: escribí un número, una fracción con barra o «inf».'); }
+    else if (r!==R){ bien=false;
+      if (e.kind==='inf' && r===0) msgs.push('El límite del criterio da \\(0\\), pero el radio es su inverso: si \\(\\alpha = 0\\), entonces \\(R = +\\infty\\).');
+      else if (e.kind==='cero' && r===Infinity) msgs.push('El límite da \\(+\\infty\\), y entonces el radio es \\(0\\), no infinito.');
+      else msgs.push('El radio no es ese. Calculá el límite del cociente: los factoriales se simplifican.');
+    } else msgs.push('Radio correcto.');
+    const vw = $('[data-donde]', art).value; d.donde = vw;
+    if (vw===''){ bien=false; msgs.push('Falta elegir dónde converge.'); }
+    else if (vw===e.donde) msgs.push('Dónde converge: correcto.');
+    else { bien=false; msgs.push(e.kind==='inf' ? 'Con \\(R = +\\infty\\) el intervalo no tiene bordes: converge para todo número real.' : 'Con \\(R = 0\\) no hay intervalo: solo converge en el centro.'); }
+  }
+  fb.className = 'fb show ' + (bien ? 'good' : 'bad');
+  fb.innerHTML = (bien ? '<b>Correcto.</b> ' : '') + msgs.join(' ') + (bien ? ' Ahora compará tu desarrollo con los pasos.' : ' Abrí los pasos y compará con tu desarrollo.');
+  tex(fb);
+  const est = $('[data-estado]', art);
+  est.textContent = bien ? 'correcto ✓' : 'revisar';
+  est.style.color = bien ? 'var(--green)' : 'var(--rust)';
+  d.estado = bien ? 'ok' : 'no';
+  if (!silencioso) guardar();
+  progreso();
+}
+function progreso(){
+  ['pizarron','practica'].forEach(g => {
+    const ids = EJ.filter(e => e.grupo===g).map(e => e.id);
+    const ok = ids.filter(id => ST.ej[id] && ST.ej[id].estado==='ok').length;
+    const el = $(`[data-prog="${g}"]`); if (el) el.innerHTML = `Resueltos correctamente: <b>${ok}</b> de ${ids.length}`;
+  });
+}
+function abrirPasos(art, abrir, silencioso){
+  $$('.paso', art).forEach(p => p.classList.toggle('open', abrir));
+  $('[data-abrir]', art).textContent = abrir ? 'Cerrar los pasos' : 'Abrir todos los pasos';
+  const d = ST.ej[art.dataset.ej] || (ST.ej[art.dataset.ej] = {}); d.abierto = abrir; if (!silencioso) guardar();
+}
+
+/* ---------- resumen ---------- */
+function pintarResumen(){
+  let ok = 0, intentados = 0;
+  EJ.forEach(e => {
+    const d = ST.ej[e.id] || {};
+    const row = $(`[data-row="${e.id}"]`);
+    const ver = !!(d.estado || d.ans) || ST.verTodos;
+    $$('.val', row).forEach(td => td.classList.toggle('ver', ver));
+    const est = $('[data-est]', row);
+    est.className = 'est' + (d.estado==='ok' ? ' ok' : (d.estado==='no' ? ' no' : ''));
+    est.textContent = d.estado==='ok' ? 'correcto ✓' : (d.estado==='no' ? 'revisar' : '—');
+    if (d.estado) intentados++; if (d.estado==='ok') ok++;
+  });
+  $('#resScore').textContent = `${ok} de ${EJ.length} correctos`;
+  $('#resMsg').textContent = intentados===0 ? 'Todavía no comprobaste ningún ejercicio.'
+    : (ok===EJ.length ? 'Los ocho. Repasá las justificaciones de los extremos: es lo que más se pide en el examen.'
+    : (intentados<EJ.length ? `Comprobaste ${intentados} de ${EJ.length}. Seguí con los que faltan.` : 'Volvé a los marcados «revisar»: casi siempre el error está en los extremos, no en el radio.'));
+}
+
+/* ---------- persistencia ---------- */
+const STORE_KEY = 'radio-intervalo-pizarron-philips-v1';
+const ST = {sec:'teoria', ej:{}, verTodos:false};
+function guardar(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(ST)); } catch(_){} }
+function cargar(){ try { const s = localStorage.getItem(STORE_KEY); if (s){ Object.assign(ST, JSON.parse(s)); } } catch(_){} }
+function restaurar(){
+  Object.entries(ST.ej).forEach(([id, d]) => {
+    const art = $(`.ej[data-ej="${id}"]`); if (!art) return;
+    if (d.r!==undefined) $('[data-r]', art).value = d.r;
+    if (d.izq && $('[data-ext="izq"]', art)) $('[data-ext="izq"]', art).value = d.izq;
+    if (d.der && $('[data-ext="der"]', art)) $('[data-ext="der"]', art).value = d.der;
+    if (d.donde && $('[data-donde]', art)) $('[data-donde]', art).value = d.donde;
+    if (d.estado) comprobar(art, true);
+    if (d.abierto) abrirPasos(art, true, true);
+    if (d.ans) $('.ans', art).classList.add('open');
+  });
+  progreso();
+  if (ST.sec && ST.sec!=='teoria') ir(ST.sec, true);
+}
+function doReset(){
+  ST.ej = {}; ST.verTodos = false; guardar();
+  $$('.ej').forEach(art => {
+    $$('input,select', art).forEach(x => { x.value = ''; });
+    const fb = $('[data-fbej]', art); fb.className = 'fb'; fb.innerHTML = '';
+    const est = $('[data-estado]', art); est.textContent = 'sin responder'; est.style.color = '';
+    $$('.paso', art).forEach(p => p.classList.remove('open')); $('.ans', art).classList.remove('open');
+    $('[data-abrir]', art).textContent = 'Abrir todos los pasos';
+  });
+  progreso(); pintarResumen();
+  $('#modalReset').classList.remove('show');
+}
+
+/* ---------- eventos (delegación) ---------- */
+document.addEventListener('click', e => {
+  const go = e.target.closest('[data-go]'); if (go){ ir(go.dataset.go); return; }
+  const ch = e.target.closest('[data-ir]'); if (ch){ const t = document.getElementById(ch.dataset.ir); if (t) t.scrollIntoView({block:'start'}); return; }
+  const pasoBtn = e.target.closest('.paso > button');
+  if (pasoBtn){ const p = pasoBtn.parentElement; p.classList.toggle('open'); if (p.classList.contains('open')){ const r = p.getBoundingClientRect(); if (r.top < 70) p.scrollIntoView({block:'start'}); } return; }
+  const ansBtn = e.target.closest('.ans > button');
+  if (ansBtn){ const a = ansBtn.parentElement; a.classList.toggle('open'); const art = a.closest('.ej'); const d = ST.ej[art.dataset.ej] || (ST.ej[art.dataset.ej] = {}); if (a.classList.contains('open')) d.ans = true; guardar(); return; }
+  const art = e.target.closest('.ej');
+  if (art){
+    if (e.target.closest('[data-check]')) { comprobar(art); return; }
+    if (e.target.closest('[data-abrir]')) { abrirPasos(art, !$$('.paso.open', art).length); return; }
+  }
+  if (e.target.closest('#verTodos')){ ST.verTodos = true; guardar(); pintarResumen(); return; }
+  if (e.target.closest('#reiniciar')){ $('#modalReset').classList.add('show'); return; }
+  if (e.target.closest('#doReset')){ doReset(); return; }
+  if (e.target.closest('#closeReset') || e.target.id==='modalReset'){ $('#modalReset').classList.remove('show'); return; }
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && e.target.matches('[data-r]')) comprobar(e.target.closest('.ej'));
+});
+
+/* ---------- respaldo sin KaTeX: conversor mínimo de TeX a HTML ---------- */
+const SYM = {infty:'∞', to:'→', le:'≤', ge:'≥', ne:'≠', neq:'≠', Rightarrow:'⇒', Longrightarrow:'⟹', longrightarrow:'⟶', in:'∈', pm:'±', cdot:'·', cdots:'⋯', ldots:'…', alpha:'α', beta:'β', approx:'≈', times:'×', quad:' ', qquad:'  ', ',':' ', ';':' ', ':':' ', '!':'', ' ':' ', displaystyle:'', limits:'', ln:'ln', '{':'{', '}':'}'};
+function esc(c){ return c==='<' ? '&lt;' : c==='>' ? '&gt;' : c==='&' ? '&amp;' : c; }
+function mfTok(s){
+  const t = []; let i = 0;
+  while (i < s.length){
+    const ch = s[i];
+    if (ch === '\\'){
+      let j = i+1;
+      if (/[a-zA-Z]/.test(s[j]||'')){ while (j < s.length && /[a-zA-Z]/.test(s[j])) j++; t.push({c: s.slice(i+1, j)}); i = j; }
+      else { t.push({c: s[j]||''}); i = j+1; }
+    } else if (ch === '{'){
+      let d = 1, j = i+1; while (j < s.length && d > 0){ if (s[j]==='\\'){ j+=2; continue; } if (s[j]==='{') d++; else if (s[j]==='}') d--; j++; }
+      t.push({g: s.slice(i+1, j-1)}); i = j;
+    } else { t.push({ch}); i++; }
+  }
+  return t;
+}
+function mfArg(t, k){ const x = t[k]; if (!x) return ['', k]; if (x.g!==undefined) return [mfRender(x.g), k+1]; if (x.c!==undefined) return [mfRender('\\'+x.c), k+1]; return [mfRender(x.ch), k+1]; }
+function mfScripts(t, k){
+  let sup = '', sub = '';
+  for (let r=0; r<2; r++){
+    if (t[k] && t[k].ch === '^'){ [sup, k] = mfArg(t, k+1); }
+    else if (t[k] && t[k].ch === '_'){ [sub, k] = mfArg(t, k+1); }
+  }
+  return [sup, sub, k];
+}
+function mfRender(src){
+  const t = mfTok(src); let out = ''; let k = 0;
+  while (k < t.length){
+    const x = t[k];
+    if (x.g!==undefined){ out += mfRender(x.g); k++; continue; }
+    if (x.ch!==undefined){
+      const ch = x.ch;
+      if (ch==='^' || ch==='_'){ const [a, k2] = mfArg(t, k+1); out += ch==='^' ? `<sup>${a}</sup>` : `<sub>${a}</sub>`; k = k2; continue; }
+      if (ch==='-') out += '−';
+      else if (/[a-zA-Z]/.test(ch)) out += `<span class="v">${ch}</span>`;
+      else out += esc(ch);
+      k++; continue;
+    }
+    const c = x.c; k++;
+    if (c==='dfrac' || c==='frac' || c==='tfrac'){ let a, b; [a, k] = mfArg(t, k); [b, k] = mfArg(t, k); out += `<span class="frac"><span>${a}</span><span>${b}</span></span>`; continue; }
+    if (c==='sqrt'){
+      let idx = '';
+      if (t[k] && t[k].ch==='['){ let j = k+1, s = ''; while (t[j] && t[j].ch!==']'){ s += t[j].ch!==undefined ? t[j].ch : (t[j].g!==undefined ? '{'+t[j].g+'}' : '\\'+t[j].c); j++; } idx = mfRender(s); k = j+1; }
+      let a; [a, k] = mfArg(t, k);
+      out += `${idx ? `<sup>${idx}</sup>` : ''}√<span style="border-top:1px solid currentColor">${a}</span>`; continue;
+    }
+    if (c==='sum'){ const [sup, sub, k2] = mfScripts(t, k); k = k2; out += `<span class="lim"><small>${sup}</small><span class="big">Σ</span><small>${sub}</small></span>`; continue; }
+    if (c==='lim'){ const [sup, sub, k2] = mfScripts(t, k); k = k2; out += `<span class="lim">lím<small>${sub}</small></span>`; continue; }
+    if (c==='text' || c==='mathrm' || c==='operatorname'){ const g = t[k]; k++; out += g && g.g!==undefined ? g.g : ''; continue; }
+    if (c==='mathbb'){ const g = t[k]; k++; out += (g && g.g==='R') ? 'ℝ' : (g ? g.g : ''); continue; }
+    if (c==='left' || c==='right'){ if (t[k] && t[k].ch!==undefined){ out += t[k].ch==='.' ? '' : esc(t[k].ch); k++; } else if (t[k] && t[k].c){ out += SYM[t[k].c] || ''; k++; } continue; }
+    if (SYM[c]!==undefined){ out += SYM[c]; continue; }
+    out += c;
+  }
+  return out;
+}
+function mfallRender(root){
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement.closest('script,style,.mfall') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+  const nodes = []; let n; while ((n = walker.nextNode())) if (/\\[\(\[]/.test(n.nodeValue)) nodes.push(n);
+  nodes.forEach(node => {
+    const src = node.nodeValue.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const html = src
+      .replace(/\\\[([\s\S]*?)\\\]/g, (_, s) => `<span class="mfall disp">${mfRender(s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'))}</span>`)
+      .replace(/\\\(([\s\S]*?)\\\)/g, (_, s) => `<span class="mfall">${mfRender(s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'))}</span>`);
+    const span = document.createElement('span'); span.innerHTML = html;
+    node.parentNode.replaceChild(span, node);
+  });
+}
+
+/* ---------- autotest (?test) ---------- */
+function correrTests(){
+  const T = []; const ok = (nombre, cond, det) => T.push({nombre, ok: !!cond, det});
+  const N = 5000;
+  EJ.forEach(e => {
+    if (LNA[e.id]){ const r = Math.exp(LNA[e.id](N+1) - LNA[e.id](N)); ok(`Ej ${e.num}: R = ${e.R}`, Math.abs(r - 1/e.R) < 0.01/e.R, `cociente ≈ ${r.toFixed(5)}`); }
+    if (RAT[e.id]){ const r = RAT[e.id](N); ok(`Ej ${e.num}: ${e.kind==='inf'?'α → 0':'α → ∞'}`, e.kind==='inf' ? r < 1e-3 : r > 1e3, String(r)); }
+    if (e.kind==='fin'){
+      ok(`Ej ${e.num}: extremos c ± R`, e.izq===e.c-e.R && e.der===e.c+e.R, `${e.izq}, ${e.der}`);
+      ok(`Ej ${e.num}: intervalo coherente con los extremos`, e.final.startsWith('[')===(e.ext[0]==='C') && e.final.endsWith(']')===(e.ext[1]==='C'), e.final);
+    }
+  });
+  [['1/7', 1/7], ['0,5', 0.5], ['3', 3], ['−2', -2], ['abc', null], ['1/0', null], ['inf', Infinity], ['0', 0], ['3x', null]].forEach(([s,v]) => { const p = parseR(s); ok(`parseR("${s}")`, p===v || (typeof v==='number' && isFinite(v) && Math.abs(p-v)<1e-12), String(p)); });
+  ok('8 ejercicios con ids únicos', new Set(EJ.map(e=>e.id)).size===8 && EJ.length===8);
+  ok('8 tarjetas en el DOM', $$('.ej').length===8);
+  ok('cada tarjeta tiene al menos 4 pasos y una respuesta final', $$('.ej').every(a => $$('.paso', a).length>=4 && $$('.ans', a).length===1));
+  ok('2 del pizarrón y 6 de práctica', EJ.filter(e=>e.grupo==='pizarron').length===2 && EJ.filter(e=>e.grupo==='practica').length===6);
+  ok('8 filas en el resumen', $$('#tablaRes [data-row]').length===8);
+  ok('sin .katex-error', $$('.katex-error').length===0);
+  window.__TESTS__ = T;
+  const panel = document.createElement('div'); panel.id = 'testPanel';
+  const nOk = T.filter(t=>t.ok).length;
+  panel.innerHTML = `<div><b>Autotest: ${nOk} / ${T.length}</b></div>` + T.map(t => `<div class="${t.ok?'ok':'fail'}">${t.ok?'✓':'✗'} ${t.nombre}${t.det?' · '+t.det:''}</div>`).join('');
+  document.body.appendChild(panel);
+}
+window.__api = {comprobar, parseR, EJ};
+
+/* ---------- arranque ---------- */
+function start(){
+  if (!window.renderMathInElement){ window.__katexFailed = true; window.renderMathInElement = mfallRender; }
+  tex(document.body);
+  cargar();
+  restaurar();
+  pintarResumen();
+  if (/[?&]test\b/.test(location.search)) correrTests();
+}
+if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', () => setTimeout(start, 0)); else setTimeout(start, 0);
+})();
+</script>
+</body>
+</html>
